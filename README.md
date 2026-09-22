@@ -4,7 +4,7 @@
 
 不绑定任何渲染框架——Remotion、纯 HTML/CSS 动画、Canvas，甚至已经渲染好的 mp4 都能接进来。
 
-![布局：左侧预览 + 右侧分镜列表 / 字幕时间轴](https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=dark%20themed%20video%20editing%20studio%20interface%20with%20left%20preview%20canvas%20and%20right%20sidebar%20showing%20storyboard%20cards%20and%20subtitle%20timeline%2C%20orange%20accent%20buttons%2C%20professional%20ui%20design&image_size=landscape_16_9)
+![布局：左侧预览 + 右侧分镜列表 / 字幕时间轴](./docs/preview.png)
 
 ## 特性
 
