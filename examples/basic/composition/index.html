@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Demo Composition</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        overflow: hidden;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
+          'Microsoft YaHei', sans-serif;
+        background: #080a0f;
+        color: #e6e9f0;
+      }
+      #stage {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .orb {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(60px);
+        opacity: 0.55;
+        transition: transform 0.6s ease-out;
+      }
+      .orb--a {
+        width: 42%;
+        aspect-ratio: 1;
+        background: #e8813a;
+        top: 8%;
+        left: 6%;
+      }
+      .orb--b {
+        width: 48%;
+        aspect-ratio: 1;
+        background: #3b6fd4;
+        bottom: 4%;
+        right: 4%;
+      }
+      .card {
+        position: relative;
+        text-align: center;
+        padding: 0 6%;
+        max-width: 70%;
+      }
+      .badge {
+        display: inline-block;
+        font-size: 12px;
+        letter-spacing: 0.14em;
+        color: #9aa2b5;
+        border: 1px solid #262d3d;
+        border-radius: 999px;
+        padding: 5px 14px;
+        margin-bottom: 22px;
+      }
+      h1 {
+        margin: 0 0 14px;
+        font-size: clamp(24px, 4.2vw, 62px);
+        line-height: 1.18;
+        letter-spacing: -0.01em;
+      }
+      .sub {
+        font-size: clamp(13px, 1.5vw, 21px);
+        color: #9aa2b5;
+        line-height: 1.6;
+      }
+      .progress {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 3px;
+        background: rgba(255, 255, 255, 0.08);
+      }
+      .progress__fill {
+        height: 100%;
+        background: #e8813a;
+        width: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage">
+      <div class="orb orb--a"></div>
+      <div class="orb orb--b"></div>
+      <div class="card">
+        <div class="badge" id="badge">SCENE 01</div>
+        <h1 id="title">判断开源项目价值的标准</h1>
+        <p class="sub" id="sub">别看它自己火不火，看它的想法有没有被整个行业抄走</p>
+      </div>
+      <div class="progress"><div class="progress__fill" id="bar"></div></div>
+    </div>
+
+    <script>
+      /**
+       * A reference implementation of the Malinton Video Studio preview
+       * protocol. Any composition page can speak this and be driven by the
+       * studio's transport controls:
+       *
+       *   studio -> frame : { type: 'malinton-studio:seek',   time }
+       *   studio -> frame : { type: 'malinton-studio:play',   time }
+       *   studio -> frame : { type: 'malinton-studio:pause' }
+       *
+       * The frame renders deterministically from `time`, so seeking is exact.
+       */
+      const SCENES = [
+        {
+          start: 0,
+          title: '判断开源项目价值的标准',
+          sub: '别看它自己火不火，看它的想法有没有被整个行业抄走',
+        },
+        {
+          start: 10,
+          title: 'OpenClaw 2.0 更新清单',
+          sub: '模型路由更细 · 工具调用收敛到一个协议 · 权限模型前置',
+        },
+        {
+          start: 36,
+          title: '产品力对比',
+          sub: '安装成本更低，扩展接口更克制，代价是文档更长',
+        },
+        {
+          start: 59,
+          title: '典型使用场景',
+          sub: '重复运维 · 仓库巡检 · 团队知识入口',
+        },
+        {
+          start: 78,
+          title: '结论与建议',
+          sub: '选工具的本质，是选你愿意承担的维护成本',
+        },
+      ]
+
+      const DURATION = 107
+
+      const el = {
+        badge: document.getElementById('badge'),
+        title: document.getElementById('title'),
+        sub: document.getElementById('sub'),
+        bar: document.getElementById('bar'),
+        orbA: document.querySelector('.orb--a'),
+        orbB: document.querySelector('.orb--b'),
+      }
+
+      let time = 0
+
+      function render(t) {
+        time = t
+        let index = 0
+        for (let i = 0; i < SCENES.length; i++) {
+          if (t >= SCENES[i].start) index = i
+        }
+        const scene = SCENES[index]
+
+        el.badge.textContent = `SCENE ${String(index + 1).padStart(2, '0')}`
+        el.title.textContent = scene.title
+        el.sub.textContent = scene.sub
+
+        el.bar.style.width = `${Math.min(100, (t / DURATION) * 100)}%`
+
+        // Slow parallax drift so motion is visible while scrubbing.
+        const drift = (t / DURATION) * 60
+        el.orbA.style.transform = `translate(${drift}px, ${drift * 0.4}px)`
+        el.orbB.style.transform = `translate(${-drift}px, ${-drift * 0.5}px)`
+      }
+
+      window.addEventListener('message', (event) => {
+        const data = event.data
+        if (!data || typeof data.type !== 'string') return
+        if (!data.type.startsWith('malinton-studio:')) return
+
+        switch (data.type) {
+          case 'malinton-studio:seek':
+            render(typeof data.time === 'number' ? data.time : time)
+            break
+          case 'malinton-studio:play':
+            render(typeof data.time === 'number' ? data.time : time)
+            break
+          case 'malinton-studio:pause':
+            break
+        }
+      })
+
+      // Announce readiness so the host can push the initial frame immediately.
+      render(0)
+      parent.postMessage({ type: 'malinton-studio:ready' }, '*')
+    </script>
+  </body>
+</html>

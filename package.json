@@ -1,0 +1,90 @@
+{
+  "name": "malinton-video-studio",
+  "version": "0.1.0",
+  "description": "A lightweight, framework-agnostic video studio for previewing scene-based compositions — storyboard list, subtitle timeline, audio control and live source preview.",
+  "keywords": [
+    "video",
+    "studio",
+    "preview",
+    "storyboard",
+    "subtitle",
+    "timeline",
+    "composition",
+    "player"
+  ],
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "malinton-studio": "./bin/malinton-studio.mjs"
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./style.css": "./dist/style.css",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "bin",
+    "dist",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build && node scripts/build-cli.mjs",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "example": "node bin/malinton-studio.mjs --root examples/basic"
+  },
+  "dependencies": {
+    "open": "^10.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.5",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@vitejs/plugin-react": "^4.3.4",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "typescript": "^5.7.3",
+    "vite": "^6.0.7",
+    "vite-plugin-dts": "^4.5.0"
+  },
+  "peerDependencies": {
+    "react": ">=17",
+    "react-dom": ">=17"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    },
+    "react-dom": {
+      "optional": true
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wafu7969/malinton-video-studio.git"
+  },
+  "homepage": "https://github.com/wafu7969/malinton-video-studio#readme",
+  "bugs": {
+    "url": "https://github.com/wafu7969/malinton-video-studio/issues"
+  },
+  "files": [
+    "bin",
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": [
+    "*.css"
+  ]
+}
