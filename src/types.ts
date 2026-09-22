@@ -12,6 +12,11 @@ export interface StudioMeta {
   height?: number
   /** Aspect ratio label. Derived from width/height when omitted. */
   aspectRatio?: string
+  /**
+   * Resolution class label, e.g. "2K". Derived from width/height when omitted.
+   * Set this only to override what the dimensions imply.
+   */
+  resolutionLabel?: string
   /** Source label shown next to the status dot, e.g. "源码实时预览" */
   sourceLabel?: string
   /**
@@ -94,7 +99,15 @@ export interface ResolvedManifest {
   version: number
   title: string
   meta: Required<
-    Pick<StudioMeta, 'width' | 'height' | 'aspectRatio' | 'sourceLabel' | 'frameRate'>
+    Pick<
+      StudioMeta,
+      | 'width'
+      | 'height'
+      | 'aspectRatio'
+      | 'resolutionLabel'
+      | 'sourceLabel'
+      | 'frameRate'
+    >
   >
   preview: NonNullable<StudioManifest['preview']>
   audio?: string

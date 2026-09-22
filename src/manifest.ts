@@ -24,6 +24,24 @@ export function ratioLabel(width: number, height: number): string {
   return `${width / d}:${height / d}`
 }
 
+/**
+ * Resolution class, keyed off the long edge — the convention the display
+ * industry uses. `1920x1080` -> `"2K"`, `3840x2160` -> `"4K"`.
+ *
+ * These are the marketing labels, not the DCI pixel counts (DCI 2K is 2048px),
+ * because that is what people recognise when reading a canvas size.
+ */
+export function resolutionClass(width: number, height: number): string {
+  const longEdge = Math.max(width || 0, height || 0)
+  if (longEdge >= 7680) return '8K'
+  if (longEdge >= 3840) return '4K'
+  if (longEdge >= 2560) return '2.5K'
+  if (longEdge >= 1920) return '2K'
+  if (longEdge >= 1280) return 'HD'
+  if (longEdge >= 854) return 'SD'
+  return '低清'
+}
+
 function num(value: unknown, fallback: number): number {
   return typeof value === 'number' && Number.isFinite(value) ? value : fallback
 }
@@ -107,6 +125,8 @@ export function resolveManifest(manifest: StudioManifest): ResolvedManifest {
       width,
       height,
       aspectRatio: manifest.meta?.aspectRatio ?? ratioLabel(width, height),
+      resolutionLabel:
+        manifest.meta?.resolutionLabel ?? resolutionClass(width, height),
       sourceLabel: manifest.meta?.sourceLabel ?? '源码实时预览',
       frameRate: num(manifest.meta?.frameRate, DEFAULT_FRAME_RATE),
     },

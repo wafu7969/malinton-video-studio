@@ -12,7 +12,7 @@
 - **字幕时间轴** — 逐句展示时间戳，点击定位，当前句逐帧高亮
 - **实时源码预览** — iframe 加载你的合成页面，通过 `postMessage` 协议驱动播放与定位
 - **精确的时间轴控制** — 播放 / 暂停、上一段 / 下一段、重播、进度条拖拽、键盘左右键
-- **音频控制** — 音量、静音、配音开关，支持「每个分镜一段配音」或「整片一条音轨」
+- **音频控制** — 音量与静音，支持「每个分镜一段配音」或「整片一条音轨」
 - **零框架耦合** — 只要你的合成页面能响应 seek 消息，就能接进来
 - **可换肤** — 全部颜色都是 `.mvs-root` 上的 CSS 变量
 
@@ -119,7 +119,6 @@ export default function App() {
 | `driver` | `PreviewDriver` | 自定义预览驱动，见「自定义预览源」。不传则由 `preview` 决定 |
 | `resolveAsset` | `(path: string) => string` | 把清单里的相对路径转成可加载的 URL，默认原样返回 |
 | `autoPlay` | `boolean` | 挂载后自动播放，默认 `false` |
-| `showCaptions` | `boolean` | 初始是否开启字幕叠加层，默认 `false` |
 | `className` | `string` | 根元素附加类名，用于覆盖样式 |
 
 ## 清单字段
@@ -129,6 +128,7 @@ export default function App() {
 | `title` | `string` | 项目标题，同时用作浏览器标签页标题 |
 | `meta.width` / `meta.height` | `number` | 画布尺寸，默认 `1920 × 1080` |
 | `meta.aspectRatio` | `string` | 画幅标签，默认从宽高自动约分得出 |
+| `meta.resolutionLabel` | `string` | 清晰度标签，默认按长边推导（`2K`、`4K`…），可手动覆盖 |
 | `meta.frameRate` | `number` | 帧率，默认 `30`。按帧驱动的预览（如 Remotion）必须与合成一致 |
 | `meta.sourceLabel` | `string` | 预览区左上角的状态文字，默认 `源码实时预览` |
 | `preview` | `object` | 预览源，见下表；不配置则只显示右侧面板 |

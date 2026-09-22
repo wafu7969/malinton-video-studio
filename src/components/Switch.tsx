@@ -6,7 +6,7 @@ interface SwitchProps {
   id?: string
 }
 
-/** The pill toggle used for "字幕显示" and "静音". */
+/** The pill toggle used for the mute control. */
 export function Switch({ checked, onChange, label, id }: SwitchProps) {
   return (
     <button

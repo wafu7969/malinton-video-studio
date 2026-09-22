@@ -34,8 +34,6 @@ export interface PlaybackEngine {
   setVolume: (v: number) => void
   muted: boolean
   setMuted: (m: boolean) => void
-  voiceEnabled: boolean
-  setVoiceEnabled: (v: boolean) => void
   /** Bumped whenever the host asks for a source reload. */
   reloadToken: number
   reloadSource: () => void
@@ -68,7 +66,6 @@ export function usePlaybackEngine({
   const [status, setStatus] = useState<PlaybackStatus>('idle')
   const [volume, setVolume] = useState(1)
   const [muted, setMuted] = useState(false)
-  const [voiceEnabled, setVoiceEnabled] = useState(true)
   const [reloadToken, setReloadToken] = useState(0)
 
   const audioRef = useRef<HTMLAudioElement | null>(null)
@@ -109,11 +106,10 @@ export function usePlaybackEngine({
 
   /** Scene audio wins over the global track; it is the per-shot voice-over. */
   const audioSrc = useMemo(() => {
-    if (!voiceEnabled) return undefined
     const sceneAudio = manifest.scenes[activeSceneIndex]?.audio
     const picked = sceneAudio ?? manifest.audio
     return picked ? resolveAsset(picked) : undefined
-  }, [voiceEnabled, manifest.scenes, manifest.audio, activeSceneIndex, resolveAsset])
+  }, [manifest.scenes, manifest.audio, activeSceneIndex, resolveAsset])
 
   /* ------------------------------------------------------------------ */
   /* Clock                                                               */
@@ -320,8 +316,6 @@ export function usePlaybackEngine({
     setVolume,
     muted,
     setMuted,
-    voiceEnabled,
-    setVoiceEnabled,
     reloadToken,
     reloadSource,
     audioRef,

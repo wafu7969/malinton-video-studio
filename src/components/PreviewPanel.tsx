@@ -21,8 +21,6 @@ export interface PreviewPanelProps {
   driver?: PreviewDriver
   /** Rebuild the preview source. Owned by the host so it can rebuild a driver. */
   onReloadSource: () => void
-  showSubtitles: boolean
-  onShowSubtitlesChange: (value: boolean) => void
 }
 
 export function PreviewPanel({
@@ -30,19 +28,10 @@ export function PreviewPanel({
   engine,
   driver,
   onReloadSource,
-  showSubtitles,
-  onShowSubtitlesChange,
 }: PreviewPanelProps) {
   const { meta } = manifest
   const progress = manifest.duration
     ? (engine.currentTime / manifest.duration) * 100
-    : 0
-
-  const activeScene = manifest.scenes[engine.activeSceneIndex]
-  const activeSceneCueCount = activeScene
-    ? manifest.subtitles.filter(
-        (c) => c.start >= activeScene.start && c.start < activeScene.end,
-      ).length
     : 0
 
   const canvas = driver?.render?.()
@@ -65,7 +54,7 @@ export function PreviewPanel({
           {meta.sourceLabel}
         </Chip>
         <Chip>
-          {meta.width} × {meta.height} · {meta.aspectRatio}
+          {meta.width} × {meta.height} · {meta.aspectRatio} · {meta.resolutionLabel}
         </Chip>
         <Chip>总时长 {formatTime(manifest.duration)}</Chip>
         <Chip>
@@ -81,12 +70,6 @@ export function PreviewPanel({
             <p className="mvs-stage__hint">
               在清单中设置 <code>preview</code>，或通过 <code>driver</code> 接入预览
             </p>
-          </div>
-        )}
-
-        {showSubtitles && manifest.subtitles[engine.activeSubtitleIndex] && (
-          <div className="mvs-caption">
-            {manifest.subtitles[engine.activeSubtitleIndex].text}
           </div>
         )}
       </div>
@@ -151,71 +134,33 @@ export function PreviewPanel({
             </button>
           </div>
 
-          <label className="mvs-controls__right">
-            <Switch
-              checked={showSubtitles}
-              onChange={onShowSubtitlesChange}
-              label="字幕显示"
-            />
-            字幕显示
-          </label>
+          <div className="mvs-controls__right">
+            <div className="mvs-volume">
+              <span className="mvs-volume__label">音量</span>
+              <input
+                type="range"
+                min={0}
+                max={100}
+                value={Math.round(engine.volume * 100)}
+                aria-label="音量"
+                onChange={(e) => engine.setVolume(Number(e.target.value) / 100)}
+              />
+              <span className="mvs-volume__value">
+                {Math.round(engine.volume * 100)}%
+              </span>
+            </div>
+
+            <label className="mvs-mute">
+              <Switch
+                checked={engine.muted}
+                onChange={engine.setMuted}
+                label="静音"
+              />
+              静音
+            </label>
+          </div>
         </div>
       </div>
-
-      {/* ---- audio bar ---- */}
-      <footer className="mvs-audiobar">
-        <div className="mvs-audiobar__volume">
-          <span className="mvs-audiobar__label">音量</span>
-          <input
-            type="range"
-            min={0}
-            max={100}
-            value={Math.round(engine.volume * 100)}
-            aria-label="音量"
-            onChange={(e) => engine.setVolume(Number(e.target.value) / 100)}
-          />
-          <span className="mvs-audiobar__value">
-            {Math.round(engine.volume * 100)}%
-          </span>
-        </div>
-
-        <label className="mvs-audiobar__mute">
-          <Switch
-            checked={engine.muted}
-            onChange={engine.setMuted}
-            label="静音"
-          />
-          静音
-        </label>
-
-        <button
-          type="button"
-          className={`mvs-toggle-link${engine.voiceEnabled ? '' : ' is-off'}`}
-          onClick={() => engine.setVoiceEnabled(!engine.voiceEnabled)}
-        >
-          {engine.voiceEnabled ? '关闭配音' : '开启配音'}
-        </button>
-
-        <div className="mvs-audiobar__meta">
-          <span>当前分镜配音：</span>
-          <span className="mvs-audiobar__path">
-            {engine.audioSrc ?? '—'}
-          </span>
-          <span className="mvs-audiobar__sep">·</span>
-          <span>字幕 {activeSceneCueCount} 句</span>
-          <span className="mvs-audiobar__sep">·</span>
-          <span>
-            时长{' '}
-            {activeScene
-              ? `${(activeScene.end - activeScene.start).toFixed(2)}s`
-              : '—'}
-          </span>
-          <span className="mvs-audiobar__dot" />
-          <span className="mvs-audiobar__status">
-            {engine.voiceEnabled ? '配音已就绪' : '配音已关闭'}
-          </span>
-        </div>
-      </footer>
 
       {/* The element that owns the clock when audio exists. */}
       {engine.audioSrc && (

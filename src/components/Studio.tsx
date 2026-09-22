@@ -19,8 +19,6 @@ export interface StudioProps {
   resolveAsset?: (path: string) => string
   /** Start playing on mount. */
   autoPlay?: boolean
-  /** Show the caption overlay on the canvas. */
-  showCaptions?: boolean
   /** Extra class on the root element, for host-level overrides. */
   className?: string
   /**
@@ -43,12 +41,10 @@ export function Studio({
   manifest: rawManifest,
   resolveAsset = (p) => p,
   autoPlay = false,
-  showCaptions = false,
   className,
   driver: externalDriver,
 }: StudioProps) {
   const manifest = useMemo(() => resolveManifest(rawManifest), [rawManifest])
-  const [showSubtitles, setShowSubtitles] = useState(showCaptions)
   const [reloadToken, setReloadToken] = useState(0)
 
   const driver = useMemo<PreviewDriver | undefined>(() => {
@@ -115,8 +111,6 @@ export function Studio({
           engine={engine}
           driver={driver}
           onReloadSource={reloadSource}
-          showSubtitles={showSubtitles}
-          onShowSubtitlesChange={setShowSubtitles}
         />
         <aside className="mvs-sidebar">
           <SceneList
