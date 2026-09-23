@@ -9,12 +9,6 @@ const HERE = fileURLToPath(new URL('.', import.meta.url))
 const PKG_ROOT = resolve(HERE, '..')
 const DIST = join(PKG_ROOT, 'dist')
 
-const MANIFEST_CANDIDATES = [
-  'malinton.studio.json',
-  'studio.config.json',
-  'studio.json',
-]
-
 const MIME = {
   '.html': 'text/html; charset=utf-8',
   '.js': 'text/javascript; charset=utf-8',
@@ -50,7 +44,7 @@ function parseArgs(argv) {
     port: 3000,
     host: 'localhost',
     open: true,
-    manifest: undefined,
+    preview: undefined,
   }
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i]
@@ -67,9 +61,8 @@ function parseArgs(argv) {
       case '--host':
         opts.host = next()
         break
-      case '--manifest':
-      case '-m':
-        opts.manifest = next()
+      case '--preview':
+        opts.preview = next()
         break
       case '--no-open':
         opts.open = false
@@ -91,20 +84,21 @@ function printHelp() {
   malinton-studio — preview a scene-based composition in the browser
 
   Usage
-    $ malinton-studio [root] [options]
+    $ malinton-studio [root] --preview <file> [options]
 
   Options
-    -r, --root <dir>       Project root to serve          (default: cwd)
-    -m, --manifest <file>  Manifest path, relative to root
-    -p, --port <number>    Port to listen on             (default: 3000)
-        --host <host>      Host to bind                  (default: localhost)
-        --no-open          Do not open the browser
-    -h, --help             Show this message
+    -r, --root <dir>        Project root to serve          (default: cwd)
+        --preview <file>    Composition page, relative to root
+                            (e.g. composition/index.html)
+    -p, --port <number>     Port to listen on              (default: 3000)
+        --host <host>       Host to bind                   (default: localhost)
+        --no-open           Do not open the browser
+    -h, --help              Show this message
 
-  The manifest is discovered automatically from:
-    ${MANIFEST_CANDIDATES.join(', ')}
+  There is no manifest file. The composition page reports its own scenes,
+  subtitles, duration and audio over the malinton-studio:manifest message.
 
-  Docs: https://github.com/malinton/malinton-video-studio
+  Docs: https://github.com/wafu7969/malinton-video-studio
 `)
 }
 
@@ -133,18 +127,6 @@ function safeJoin(root, urlPath) {
   const rootWithSep = root.endsWith(sep) ? root : root + sep
   if (target !== root && !target.startsWith(rootWithSep)) return null
   return target
-}
-
-function findManifest(root, explicit) {
-  if (explicit) {
-    const p = resolve(root, explicit)
-    return existsSync(p) ? p : null
-  }
-  for (const name of MANIFEST_CANDIDATES) {
-    const p = join(root, name)
-    if (existsSync(p)) return p
-  }
-  return null
 }
 
 /** Minimal static file handler. Returns true when it wrote a response. */
@@ -184,24 +166,40 @@ async function main() {
     process.exit(1)
   }
 
-  const manifestPath = findManifest(root, opts.manifest)
+  if (!opts.preview) {
+    process.stderr.write(
+      '\n  ✖ 缺少 --preview 参数\n' +
+        '    请指定合成页面，例如：\n' +
+        '      malinton-studio --preview composition/index.html\n\n',
+    )
+    process.exit(1)
+  }
+
+  // Normalised to a root-relative path with a leading slash, which is what the
+  // shell hands to the driver as the iframe src.
+  const relativePreview = String(opts.preview).replace(/^[/\\]+/, '')
+  const previewPath = '/' + relativePreview
+
+  if (!existsSync(resolve(root, relativePreview))) {
+    process.stderr.write(
+      `\n  ✖ 找不到合成页面: ${relativePreview}\n` +
+        `    解析为: ${resolve(root, relativePreview)}\n\n`,
+    )
+    process.exit(1)
+  }
 
   const server = createServer(async (req, res) => {
     const url = req.url ?? '/'
 
     try {
-      // 1) manifest — always re-read so edits show up on refresh
-      if (url.startsWith('/__studio/manifest')) {
-        if (!manifestPath) {
-          return send(
-            res,
-            404,
-            JSON.stringify({ error: 'no manifest found', searched: MANIFEST_CANDIDATES }),
-            'application/json; charset=utf-8',
-          )
-        }
-        const body = await readFile(manifestPath, 'utf8')
-        return send(res, 200, body, 'application/json; charset=utf-8')
+      // 1) bootstrap config — tells the shell which composition to load
+      if (url.startsWith('/__studio/config')) {
+        return send(
+          res,
+          200,
+          JSON.stringify({ previewSrc: previewPath }),
+          'application/json; charset=utf-8',
+        )
       }
 
       // 2) studio runtime assets, straight out of dist/
@@ -245,7 +243,7 @@ async function main() {
       '  Malinton Video Studio',
       `  ➜  Local:    ${url}`,
       `  ➜  Root:     ${root}`,
-      `  ➜  Manifest: ${manifestPath ?? '未找到（可通过 --manifest 指定）'}`,
+      `  ➜  Preview:  ${relativePreview}`,
       '',
     ]
     process.stdout.write(lines.join('\n') + '\n')

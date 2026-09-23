@@ -1,5 +1,7 @@
 import { createElement } from 'react'
 import type { DriverFrame, PreviewDriver } from '../driver'
+import { isManifestReport } from '../driver'
+import type { StudioManifest } from '../types'
 
 /**
  * The default driver for `preview.type === 'html'`: loads a composition page in
@@ -11,10 +13,14 @@ import type { DriverFrame, PreviewDriver } from '../driver'
  *   studio -> frame : { type: 'malinton-studio:seek',  time, frame, frameRate }
  *   studio -> frame : { type: 'malinton-studio:play',  time, frame, frameRate }
  *   studio -> frame : { type: 'malinton-studio:pause', time }
+ *   frame -> studio : { type: 'malinton-studio:ready' }
+ *   frame -> studio : { type: 'malinton-studio:manifest', manifest }
+ *
+ * There is no manifest file: the page describes its own scenes, subtitles,
+ * duration and audio, so the timeline never has to be maintained twice.
  *
  * Frames pushed before the page is ready would be dropped, so the driver holds
- * onto the latest one and flushes it when the frame announces itself with
- * `malinton-studio:ready`.
+ * onto the latest one and flushes it once the page announces itself.
  */
 export interface IframeDriverOptions {
   /** Url of the composition page. */
@@ -33,7 +39,10 @@ export function createIframeDriver({
   let ready = false
   let pending: DriverFrame | null = null
 
-  let onMessage: ((event: MessageEvent) => void) | null = null
+  /** Listeners registered by the studio before the iframe exists. */
+  const manifestListeners = new Set<(manifest: StudioManifest) => void>()
+  /** The last report, replayed to any listener registered afterwards. */
+  let lastManifest: StudioManifest | null = null
 
   const post = (message: Record<string, unknown>) => {
     frameRef.current?.contentWindow?.postMessage(message, '*')
@@ -50,8 +59,52 @@ export function createIframeDriver({
     pending = null
   }
 
+  const onMessage = (event: MessageEvent): void => {
+    // Only trust the frame we mounted.
+    if (frameRef.current && event.source !== frameRef.current.contentWindow) return
+
+    if (isManifestReport(event.data)) {
+      lastManifest = event.data.manifest
+      manifestListeners.forEach((listener) => listener(event.data.manifest))
+      return
+    }
+
+    const data = event.data as { type?: string } | null
+    if (data?.type !== 'malinton-studio:ready') return
+    ready = true
+    flush()
+  }
+
+  // One window-level listener for the driver's lifetime. The iframe is
+  // recreated on reload, and `event.source` keeps the check honest.
+  window.addEventListener('message', onMessage)
+
+  /**
+   * Mounts the frame. Declared once so React sees the same ref identity on
+   * every render — a fresh callback would make React detach the old one with
+   * `null` first, and that detach is indistinguishable from a real unmount.
+   *
+   * A genuine teardown unmounts the driver too, which is where `ready` is
+   * reset instead.
+   */
+  const attachFrame = (node: HTMLIFrameElement | null): void => {
+    frameRef.current = node
+  }
+
   return {
     isReady: () => ready,
+
+    dispose() {
+      window.removeEventListener('message', onMessage)
+      manifestListeners.clear()
+    },
+
+    subscribeManifest(listener) {
+      manifestListeners.add(listener)
+      // The page may have reported before the studio subscribed.
+      if (lastManifest) listener(lastManifest)
+      return () => manifestListeners.delete(listener)
+    },
 
     seek(next) {
       if (!ready) {
@@ -82,19 +135,11 @@ export function createIframeDriver({
     render() {
       return createElement('iframe', {
         key: `${src}#${reloadToken ?? 0}`,
-        ref: (node: HTMLIFrameElement | null): void => {
-          frameRef.current = node
-          if (!node || onMessage) return
-          // Listen once per mounted iframe; `ready` gates the frame pushes.
-          onMessage = (event: MessageEvent) => {
-            if (event.source !== node.contentWindow) return
-            const data = event.data as { type?: string } | null
-            if (data?.type !== 'malinton-studio:ready') return
-            ready = true
-            flush()
-          }
-          window.addEventListener('message', onMessage)
-        },
+        // Stable identity on purpose. An inline callback would be a new
+        // function every render, and React detaches a changed ref by calling
+        // it with `null` first — which would clear `ready` mid-session and
+        // silently swallow every seek.
+        ref: attachFrame,
         className: 'mvs-stage__frame',
         src,
         title: 'composition preview',

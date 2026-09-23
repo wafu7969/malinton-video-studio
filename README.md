@@ -1,6 +1,6 @@
 # Malinton Video Studio
 
-一个轻量、通用的**分镜视频预览工作台**。用一份 JSON 清单描述你的分镜、字幕、配音和画布，就能在浏览器里得到一套带分镜列表、字幕时间轴、音频控制的编辑器界面。
+一个轻量、通用的**分镜视频预览工作台**。只要你的合成页面能响应实时定位，就能在浏览器里得到一套带分镜列表、字幕时间轴、音频控制的编辑器界面。
 
 不绑定任何渲染框架——Remotion、纯 HTML/CSS 动画、Canvas，甚至已经渲染好的 mp4 都能接进来。
 
@@ -13,6 +13,7 @@
 - **实时源码预览** — iframe 加载你的合成页面，通过 `postMessage` 协议驱动播放与定位
 - **精确的时间轴控制** — 播放 / 暂停、上一段 / 下一段、重播、进度条拖拽、键盘左右键
 - **音频控制** — 音量与静音，支持「每个分镜一段配音」或「整片一条音轨」
+- **单一数据源** — 不需要额外维护清单文件，分镜与字幕由合成页面自己上报
 - **零框架耦合** — 只要你的合成页面能响应 seek 消息，就能接进来
 - **可换肤** — 全部颜色都是 `.mvs-root` 上的 CSS 变量
 
@@ -28,42 +29,39 @@ npm install -D malinton-video-studio
 
 ## 快速开始
 
-### 1. 写一份清单
+### 1. 让合成页面上报时间轴
 
-在项目根目录创建 `malinton.studio.json`：
+studio 不读清单文件。**合成页面自己就是唯一数据源** —— 它在启动时把分镜、字幕、时长和音频通过 `postMessage` 报给 studio。
 
-```json
-{
-  "title": "我的视频",
-  "meta": { "width": 1920, "height": 1080 },
-  "preview": { "type": "html", "src": "composition/index.html" },
-  "audio" : "audio/voiceover.mp3" ,
-  "scenes": [
-    { "index": "01", "title": "开场", "start": 0, "end": 10},
-    { "index": "02", "title": "正片", "start": 10, "end": 36}
-  ],
-  "subtitles": [
-    { "start": 0, "text": "第一句字幕。" },
-    { "start": 2.5, "text": "第二句字幕。" }
-  ]
-}
+在你的合成页面里加上这段：
+
+```html
+<script>
+  const MANIFEST = {
+    title: '我的视频',
+    meta: { width: 1920, height: 1080, frameRate: 30 },
+    duration: 107,
+    audio: 'audio/voiceover.mp3',          // 可选，整片音轨
+    scenes: [
+      // 每个分镜只需给 start，end 自动取下一个的 start（最后一个取 duration）
+      { title: '开场', start: 0 },
+      { title: '正片', start: 10 },
+    ],
+    subtitles: [
+      // end 同样可省略，默认取下一句的 start
+      { start: 0, text: '第一句字幕。' },
+      { start: 2.5, text: '第二句字幕。' },
+    ],
+  }
+
+  // 告诉 studio 时间轴
+  parent.postMessage({ type: 'malinton-studio:manifest', manifest: MANIFEST }, '*')
+  // 告诉 studio 可以开始推帧了
+  parent.postMessage({ type: 'malinton-studio:ready' }, '*')
+</script>
 ```
 
-所有时间单位都是**秒**。路径（`preview.src`、`audio`）相对于 CLI 的 `--root`，也就是被服务的项目根目录，**不是清单文件所在目录**——只有清单就在根目录下时两者才相同。
-
-清单里的 `preview.src` 指向你自己的合成页面，这个包不自带。想先看效果，可以直接跑仓库里的示例（见「本地开发」）。
-
-### 2. 启动
-
-```bash
-npx malinton-studio
-```
-
-浏览器会自动打开 `http://localhost:3000`。
-
-### 3. 让合成页面响应播放控制（可选）
-
-如果 `preview.type` 是 `html`，studio 会向 iframe 发送消息来驱动画面。只要监听这三条消息，就能获得逐帧精确的定位：
+再让它响应 studio 的播放控制，就能获得逐帧精确的定位：
 
 ```js
 window.addEventListener('message', (event) => {
@@ -74,16 +72,23 @@ window.addEventListener('message', (event) => {
     case 'malinton-studio:pause': break                       // 暂停
   }
 })
-
-// 页面就绪后知会 studio，让它把第一帧推过来
-parent.postMessage({ type: 'malinton-studio:ready' }, '*')
 ```
 
 `time` 是秒，`frame` 是 `time × frameRate` 取整，按帧渲染时直接用 `frame` 更省事。
 
 关键点：**画面应当由 `time` / `frame` 推导出来（声明式渲染），而不是自己计时**。这样拖拽进度条才能精确落帧。
 
-可参考 [examples/basic/composition/index.html](examples/basic/composition/index.html)，那是一份 60 行的完整示例。
+完整可运行的版本见 [examples/basic/composition/index.html](examples/basic/composition/index.html)。
+
+### 2. 启动
+
+```bash
+npx malinton-studio --root . --preview composition/index.html
+```
+
+浏览器会自动打开 `http://localhost:3000`。`--preview` 指向合成页面，路径相对于 `--root`。
+
+启动后 studio 会先显示加载态，等合成页面上报时间轴后切换到完整界面。
 
 ## CLI
 
@@ -91,26 +96,31 @@ parent.postMessage({ type: 'malinton-studio:ready' }, '*')
 malinton-studio [root] [options]
 
   -r, --root <dir>       要服务的项目根目录          (默认: 当前目录)
-  -m, --manifest <file>  清单路径，相对于 root
+      --preview <file>   **必填**，合成页面，相对于 root
+                         （例如 composition/index.html）
   -p, --port <number>    监听端口                    (默认: 3000)
       --host <host>      绑定地址                    (默认: localhost)
       --no-open          不自动打开浏览器
   -h, --help             显示帮助
 ```
 
-清单会自动在以下文件名中查找：`malinton.studio.json`、`studio.config.json`、`studio.json`。
+`--root` 下的静态资源会被直接服务，所以合成页面可以用相对路径引用音频、图片、脚本。
 
 ## 作为 React 组件使用
+
+不需要 CLI 时，把 `<Studio>` 直接挂进你自己的应用，用 `driver` 接上渲染器：
 
 ```tsx
 import { Studio } from 'malinton-video-studio'
 import 'malinton-video-studio/style.css'
-import manifest from './malinton.studio.json'
+import { useMyDriver } from './useMyDriver'
 
 export default function App() {
+  const driver = useMyDriver()
+
   return (
     <Studio
-      manifest={manifest}
+      driver={driver}
       resolveAsset={(p) => new URL(`./assets/${p}`, import.meta.url).href}
       autoPlay
     />
@@ -122,42 +132,40 @@ export default function App() {
 
 | 属性 | 类型 | 说明 |
 | --- | --- | --- |
-| `manifest` | `StudioManifest` | **必填**，清单对象 |
-| `driver` | `PreviewDriver` | 自定义预览驱动，见「自定义预览源」。不传则由 `preview` 决定 |
+| `manifest` | `StudioManifest` | 时间轴数据。**不传也可以** —— iframe 驱动会让合成页面自己上报，此时 studio 先显示加载态 |
+| `driver` | `PreviewDriver` | 自定义预览驱动，见「自定义预览源」。不传则用内置的 iframe 驱动 |
+| `previewSrc` | `string` | 合成页面地址。不传 `driver` 时用它创建内置 iframe 驱动 |
 | `resolveAsset` | `(path: string) => string` | 把清单里的相对路径转成可加载的 URL，默认原样返回 |
-| `autoPlay` | `boolean` | 挂载后自动播放，默认 `false` |
+| `autoPlay` | `boolean` | 时间轴就绪后自动播放，默认 `false` |
 | `className` | `string` | 根元素附加类名，用于覆盖样式 |
 
+**什么时候需要传 `manifest`？** 只有当驱动无法自描述时。iframe 里的页面能自己上报，所以留空；Remotion `<Player>` 没有页面可执行上报代码，就得由宿主把时间轴作为 `manifest` 传进来。
+
 ## 清单字段
+
+清单就是合成页面上报的那个对象，CLI 和 `<Studio manifest>` 用的是同一套结构。
 
 | 字段 | 类型 | 说明 |
 | --- | --- | --- |
 | `title` | `string` | 项目标题，同时用作浏览器标签页标题 |
-| `meta.width` / `meta.height` | `number` | 画布尺寸，默认 `1920 × 1080` |
+| `meta.width` / `meta.height` | `number` | 画布尺寸，默认 `1920 × 1080`。同时决定预览区的锁定比例 |
 | `meta.aspectRatio` | `string` | 画幅标签，默认从宽高自动约分得出 |
 | `meta.resolutionLabel` | `string` | 清晰度标签，默认按长边推导（`2K`、`4K`…），可手动覆盖 |
 | `meta.frameRate` | `number` | 帧率，默认 `30`。按帧驱动的预览（如 Remotion）必须与合成一致 |
 | `meta.sourceLabel` | `string` | 预览区左上角的状态文字，默认 `源码实时预览` |
-| `preview` | `object` | 预览源，见下表；不配置则只显示右侧面板 |
 | `audio` | `string` | 整片音轨，当某个分镜没有自己的 `audio` 时回退到它 |
 | `duration` | `number` | 总时长覆盖值，默认取最后一个分镜/字幕的结束时间 |
 | `scenes[]` | `Scene[]` | 分镜列表 |
 | `subtitles[]` | `Subtitle[]` | 字幕列表 |
-
-### `preview` 的三种形态
-
-```json
-{ "type": "html",  "src": "composition/index.html", "sandbox": "allow-scripts" }
-{ "type": "video", "src": "out/video.mp4", "poster": "out/poster.jpg" }
-{ "type": "none" }
-```
 
 ### `scenes[]`
 
 | 字段 | 类型 | 说明 |
 | --- | --- | --- |
 | `title` | `string` | **必填**，分镜标题 |
-| `start` / `end` | `number` | **必填**，起止时间（秒） |
+| `start` | `number` | **必填**，起始时间（秒） |
+| `end` | `number` | 结束时间。省略时取下一个分镜的 `start`，最后一个取 `duration` |
+| `description` | `string` | 可选的一行说明 |
 | `index` | `string` | 序号标签，默认按顺序补零为 `01`、`02`… |
 | `audio` | `string` | 该分镜的配音，优先级高于顶层 `audio` |
 | `id` | `string` | 稳定标识，默认 `scene-{下标}` |
@@ -171,7 +179,9 @@ export default function App() {
 | `end` | `number` | 结束时间，默认取下一句的 `start` |
 | `id` | `string` | 稳定标识，默认 `cue-{下标}` |
 
-`resolveManifest()` 会补全所有默认值并根据 `start` 排序，所以清单可以手写得很随意。
+所有时间单位都是**秒**。`resolveManifest()` 会补全默认值、推导 `id` 与序号，并按 `start` 重新排序，所以清单可以写得很随意——只有 `title`、`start`、`text` 这类语义字段是必填的。
+
+**音频与字幕都是可选的。** 不写 `audio` 就只是没有声音，音量控件会置灰；不写 `subtitles` 就只显示分镜列表。
 
 ## 换肤
 
@@ -196,7 +206,7 @@ export default function App() {
 
 ### 渲染后预览
 
-最省事：用 `{ "type": "video", "src": "out/video.mp4" }` 直接看产物。
+最省事：渲染出 mp4 后用一个纯 `<video>` 页面做预览源，让它上报时间轴即可。
 
 ### 直接驱动 Remotion Player（推荐）
 
@@ -235,7 +245,7 @@ export function useRemotionDriver({ durationInFrames, fps, width, height }) {
 }
 ```
 
-然后把它交给 `<Studio>`：
+然后把它交给 `<Studio>`。注意 **Remotion 必须传 `manifest`** —— `<Player>` 不是页面，没有地方执行上报代码：
 
 ```tsx
 <Studio manifest={manifest} driver={driver} />
@@ -268,7 +278,7 @@ studio 拥有唯一的播放时钟，每一帧都通过 `driver.seek({ time, fra
 ```ts
 interface PreviewDriver {
   /** 渲染某个确切时刻。每次 seek 和每个播放帧都会调用。 */
-  seek(frame: { time: number; frame: number; frameRate: number; duration: number }): void
+  seek(frame: DriverFrame): void
   play?(frame: DriverFrame): void
   pause?(frame: DriverFrame): void
   /** 「重新加载源码」按钮。 */
@@ -277,10 +287,33 @@ interface PreviewDriver {
   render?(): ReactNode
   /** 返回 false 时 studio 会跳过推帧，等它就绪。 */
   isReady?(): boolean
+  /**
+   * 预览源自己上报时间轴。iframe 驱动用这个收合成页面的 manifest。
+   * 返回取消订阅函数。
+   */
+  subscribeManifest?(listener: (manifest: StudioManifest) => void): () => void
+  /**
+   * 释放 React 之外挂的资源——window 监听器、observer、定时器。
+   * 驱动被替换或卸载时调用。
+   */
+  dispose?(): void
+}
+
+interface DriverFrame {
+  time: number      // 秒
+  frame: number     // time × frameRate，取整
+  frameRate: number
+  duration: number
 }
 ```
 
-不传 `driver` 时，清单里的 `preview` 会选中内置实现：`html` → iframe 驱动，`video` → `<video>`。这两个也都在 `src/drivers/` 里，可以直接参考。
+几点实现上的注意：
+
+- **`seek` 必须由传入的 `frame` 推导画面**，不要自己计时，否则拖拽会漂移。
+- **`render()` 里别写内联的 `ref` 回调**。React 在 ref 身份变化时会先用 `null` 调一次旧的，跟真正的卸载无法区分——如果在那里重置了就绪标记，后续的 seek 会被静默丢掉。用稳定的函数引用。
+- **`isReady()` 返回 false 时 seek 会被跳过**，所以它只该反映「现在能不能画」，不要用它表达其他状态。
+
+不传 `driver` 时，studio 会用内置的 iframe 驱动，指向 `previewSrc`（CLI 下就是 `--preview`）指向的页面。
 
 ## 本地开发
 

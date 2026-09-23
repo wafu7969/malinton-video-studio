@@ -100,12 +100,16 @@
     <script>
       /**
        * A reference implementation of the Malinton Video Studio preview
-       * protocol. Any composition page can speak this and be driven by the
-       * studio's transport controls:
+       * protocol.
        *
-       *   studio -> frame : { type: 'malinton-studio:seek',   time }
-       *   studio -> frame : { type: 'malinton-studio:play',   time }
+       *   studio -> frame : { type: 'malinton-studio:seek',  time, frame, frameRate }
+       *   studio -> frame : { type: 'malinton-studio:play',  time, frame, frameRate }
        *   studio -> frame : { type: 'malinton-studio:pause' }
+       *   frame -> studio : { type: 'malinton-studio:ready' }
+       *   frame -> studio : { type: 'malinton-studio:manifest', manifest }
+       *
+       * There is no manifest file. The page owns its timeline and reports it on
+       * startup, so scenes and subtitles are never maintained in two places.
        *
        * The frame renders deterministically from `time`, so seeking is exact.
        */
@@ -138,6 +142,42 @@
       ]
 
       const DURATION = 107
+
+      /**
+       * The timeline the studio displays. Subtitles carry their own end; scenes
+       * only need a start, because each one runs until the next begins.
+       */
+      const SUBTITLES = [
+        { start: 0, text: '判断一个开源项目的价值，' },
+        { start: 2, text: '别看它自己火不火。' },
+        { start: 4, text: '看它的想法有没有被整个行业抄走。' },
+        { start: 10, text: '最近这只「龙虾」推出了 2.0 版本，' },
+        { start: 16, text: '但它真正值得关注的，' },
+        { start: 21, text: '是三个方向的取舍。' },
+        { start: 36, text: '接下来我们把它和同类产品放在一起比。' },
+        { start: 45, text: '代价是上手时文档更长。' },
+        { start: 59, text: '实际用起来，最典型的场景有三个。' },
+        { start: 78, text: '所以结论并不复杂。' },
+        { start: 96, text: '选工具的本质，是选你愿意承担的维护成本。' },
+      ]
+
+      const MANIFEST = {
+        title: '判断开源项目价值的标准',
+        meta: {
+          width: 1920,
+          height: 1080,
+          frameRate: 30,
+          sourceLabel: '源码实时预览',
+        },
+        duration: DURATION,
+        scenes: SCENES.map((scene, i) => ({
+          title: scene.title,
+          description: scene.sub,
+          start: scene.start,
+          end: SCENES[i + 1] ? SCENES[i + 1].start : DURATION,
+        })),
+        subtitles: SUBTITLES,
+      }
 
       const el = {
         badge: document.getElementById('badge'),
@@ -187,8 +227,13 @@
         }
       })
 
-      // Announce readiness so the host can push the initial frame immediately.
+      // Announce the timeline, then readiness. The studio needs the manifest
+      // before it can lay anything out, and readiness before it pushes a frame.
       render(0)
+      parent.postMessage(
+        { type: 'malinton-studio:manifest', manifest: MANIFEST },
+        '*',
+      )
       parent.postMessage({ type: 'malinton-studio:ready' }, '*')
     </script>
   </body>

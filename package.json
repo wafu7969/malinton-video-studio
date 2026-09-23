@@ -1,6 +1,6 @@
 {
   "name": "malinton-video-studio",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "A lightweight, framework-agnostic video studio for previewing scene-based compositions — storyboard list, subtitle timeline, audio control and live source preview.",
   "keywords": [
     "video",
@@ -44,7 +44,7 @@
     "build": "vite build && node scripts/build-cli.mjs",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
-    "example": "node bin/malinton-studio.mjs --root examples/basic"
+    "example": "node bin/malinton-studio.mjs --root examples/basic --preview composition/index.html"
   },
   "dependencies": {
     "open": "^10.1.0"

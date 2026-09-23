@@ -23,6 +23,16 @@ export interface PreviewPanelProps {
   onReloadSource: () => void
 }
 
+/**
+ * Just the canvas surface, without any manifest-dependent chrome.
+ *
+ * The composition page describes itself, so the frame has to be mounted before
+ * a manifest exists — otherwise nothing would ever load to report one.
+ */
+export function PreviewCanvas({ driver }: { driver?: PreviewDriver }) {
+  return <>{driver?.render?.() ?? null}</>
+}
+
 export function PreviewPanel({
   manifest,
   engine,
