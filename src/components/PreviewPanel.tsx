@@ -70,7 +70,21 @@ export function PreviewPanel({
 
       {/* ---- canvas ---- */}
       <div className="mvs-stage">
-        {canvas ?? (
+        {canvas ? (
+          /*
+            The surface is locked to the manifest's aspect ratio rather than
+            stretched to fill the pane, so the composition is never distorted
+            by the shape of the window.
+          */
+          <div
+            className="mvs-stage__canvas"
+            style={
+              { '--mvs-aspect': `${meta.width} / ${meta.height}` } as React.CSSProperties
+            }
+          >
+            {canvas}
+          </div>
+        ) : (
           <div className="mvs-stage__empty">
             <p>未配置预览源</p>
             <p className="mvs-stage__hint">

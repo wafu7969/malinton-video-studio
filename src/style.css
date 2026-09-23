@@ -121,6 +121,11 @@
 
 /* --------------------------------------------------------------------------
    Stage / canvas
+
+   The stage is the available area; `.mvs-stage__canvas` is the composition
+   surface inside it, locked to the manifest's width:height. Without that lock
+   the canvas would inherit the pane's shape and the composition would be
+   stretched by whatever the window happens to be.
    -------------------------------------------------------------------------- */
 
 .mvs-stage {
@@ -147,7 +152,27 @@
   border: 1px solid var(--mvs-border-soft);
 }
 
+/**
+ * Sized by `aspect-ratio` from the manifest. `width: 100%` plus
+ * `max-height: 100%` makes it fill whichever axis runs out first, never
+ * overflowing the stage in either direction.
+ */
+.mvs-stage__canvas {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  aspect-ratio: var(--mvs-aspect);
+  /* A long, thin composition would otherwise collapse below usability. */
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  border-radius: calc(var(--mvs-radius) - 2px);
+}
+
 .mvs-stage__frame {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   border: 0;
@@ -156,6 +181,8 @@
 }
 
 .mvs-stage__media {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: contain;
