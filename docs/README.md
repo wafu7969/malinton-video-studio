@@ -5,7 +5,7 @@ README 顶部的界面截图引用的是本目录下的 `preview.png`。
 ## 怎么补上
 
 1. 启动示例：`npm run example`
-2. 浏览器打开 `http://localhost:4321`
+2. 浏览器打开 `http://localhost:3000`
 3. 截取整个界面（建议 1600×900 以上，保留左侧预览区与右侧分镜列表、字幕时间轴）
 4. 存为本目录下的 `preview.png`
 

@@ -1,6 +1,6 @@
 {
   "name": "malinton-video-studio",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A lightweight, framework-agnostic video studio for previewing scene-based compositions — storyboard list, subtitle timeline, audio control and live source preview.",
   "keywords": [
     "video",
@@ -15,7 +15,7 @@
   "license": "MIT",
   "type": "module",
   "bin": {
-    "malinton-studio": "./bin/malinton-studio.mjs"
+    "malinton-studio": "bin/malinton-studio.mjs"
   },
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -32,7 +32,9 @@
   "files": [
     "bin",
     "dist",
-    "README.md"
+    "docs",
+    "README.md",
+    "LICENSE"
   ],
   "engines": {
     "node": ">=18"
@@ -72,19 +74,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/wafu7969/malinton-video-studio.git"
+    "url": "git+https://github.com/wafu7969/malinton-video-studio.git"
   },
   "homepage": "https://github.com/wafu7969/malinton-video-studio#readme",
   "bugs": {
     "url": "https://github.com/wafu7969/malinton-video-studio/issues"
   },
-  "files": [
-    "bin",
-    "dist",
-    "docs",
-    "README.md",
-    "LICENSE"
-  ],
   "sideEffects": [
     "*.css"
   ]

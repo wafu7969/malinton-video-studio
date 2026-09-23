@@ -36,6 +36,12 @@ export function PreviewPanel({
 
   const canvas = driver?.render?.()
 
+  /**
+   * The manifest may declare no audio at all. The transport still renders the
+   * volume controls in that case, but greys them out.
+   */
+  const hasAudio = !!engine.audioSrc
+
   const handleScrub = useCallback(
     (event: React.MouseEvent<HTMLDivElement>) => {
       const rect = event.currentTarget.getBoundingClientRect()
@@ -135,13 +141,22 @@ export function PreviewPanel({
           </div>
 
           <div className="mvs-controls__right">
-            <div className="mvs-volume">
+            {/*
+              Rendered even without audio, so the transport row keeps the same
+              shape across projects. Disabling it is clearer than hiding a
+              control the user just saw, and avoids the buttons shifting.
+            */}
+            <div
+              className={`mvs-volume${hasAudio ? '' : ' is-disabled'}`}
+              title={hasAudio ? undefined : '清单中未配置音频'}
+            >
               <span className="mvs-volume__label">音量</span>
               <input
                 type="range"
                 min={0}
                 max={100}
                 value={Math.round(engine.volume * 100)}
+                disabled={!hasAudio}
                 aria-label="音量"
                 onChange={(e) => engine.setVolume(Number(e.target.value) / 100)}
               />
@@ -150,11 +165,15 @@ export function PreviewPanel({
               </span>
             </div>
 
-            <label className="mvs-mute">
+            <label
+              className={`mvs-mute${hasAudio ? '' : ' is-disabled'}`}
+              title={hasAudio ? undefined : '清单中未配置音频'}
+            >
               <Switch
                 checked={engine.muted}
                 onChange={engine.setMuted}
                 label="静音"
+                disabled={!hasAudio}
               />
               静音
             </label>

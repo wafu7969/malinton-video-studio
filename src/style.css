@@ -367,6 +367,28 @@
 }
 
 /* --------------------------------------------------------------------------
+   Disabled audio controls
+
+   Shown when the manifest declares no audio. Greyed rather than hidden, so the
+   transport row keeps its shape and the control does not appear to vanish.
+   -------------------------------------------------------------------------- */
+
+.mvs-volume.is-disabled,
+.mvs-mute.is-disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+}
+
+.mvs-switch.is-disabled {
+  cursor: not-allowed;
+}
+
+.mvs-volume input[type='range']:disabled {
+  cursor: not-allowed;
+  accent-color: var(--mvs-text-faint);
+}
+
+/* --------------------------------------------------------------------------
    Sidebar panels
    -------------------------------------------------------------------------- */
 

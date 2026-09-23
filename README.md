@@ -16,6 +16,10 @@
 - **零框架耦合** — 只要你的合成页面能响应 seek 消息，就能接进来
 - **可换肤** — 全部颜色都是 `.mvs-root` 上的 CSS 变量
 
+## 应用示例
+
+- **[码灵通视频生成](https://chat.malingtong.com/)** — 用 AI 生成口播视频，分镜、字幕和配音由 studio 统一预览与试听。
+
 ## 安装
 
 ```bash
@@ -33,9 +37,10 @@ npm install -D malinton-video-studio
   "title": "我的视频",
   "meta": { "width": 1920, "height": 1080 },
   "preview": { "type": "html", "src": "composition/index.html" },
+  "audio" : "audio/voiceover.mp3" ,
   "scenes": [
-    { "index": "01", "title": "开场", "start": 0, "end": 10, "audio": "audio/scene1.mp3" },
-    { "index": "02", "title": "正片", "start": 10, "end": 36, "audio": "audio/scene2.mp3" }
+    { "index": "01", "title": "开场", "start": 0, "end": 10},
+    { "index": "02", "title": "正片", "start": 10, "end": 36}
   ],
   "subtitles": [
     { "start": 0, "text": "第一句字幕。" },
@@ -44,7 +49,9 @@ npm install -D malinton-video-studio
 }
 ```
 
-所有时间单位都是**秒**。路径相对于清单所在目录。
+所有时间单位都是**秒**。路径（`preview.src`、`audio`）相对于 CLI 的 `--root`，也就是被服务的项目根目录，**不是清单文件所在目录**——只有清单就在根目录下时两者才相同。
+
+清单里的 `preview.src` 指向你自己的合成页面，这个包不自带。想先看效果，可以直接跑仓库里的示例（见「本地开发」）。
 
 ### 2. 启动
 
@@ -52,7 +59,7 @@ npm install -D malinton-video-studio
 npx malinton-studio
 ```
 
-浏览器会自动打开 `http://localhost:4321`。
+浏览器会自动打开 `http://localhost:3000`。
 
 ### 3. 让合成页面响应播放控制（可选）
 
@@ -85,7 +92,7 @@ malinton-studio [root] [options]
 
   -r, --root <dir>       要服务的项目根目录          (默认: 当前目录)
   -m, --manifest <file>  清单路径，相对于 root
-  -p, --port <number>    监听端口                    (默认: 4321)
+  -p, --port <number>    监听端口                    (默认: 3000)
       --host <host>      绑定地址                    (默认: localhost)
       --no-open          不自动打开浏览器
   -h, --help             显示帮助

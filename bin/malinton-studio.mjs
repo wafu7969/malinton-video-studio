@@ -47,7 +47,7 @@ const MIME = {
 function parseArgs(argv) {
   const opts = {
     root: process.cwd(),
-    port: 4321,
+    port: 3000,
     host: 'localhost',
     open: true,
     manifest: undefined,
@@ -96,7 +96,7 @@ function printHelp() {
   Options
     -r, --root <dir>       Project root to serve          (default: cwd)
     -m, --manifest <file>  Manifest path, relative to root
-    -p, --port <number>    Port to listen on             (default: 4321)
+    -p, --port <number>    Port to listen on             (default: 3000)
         --host <host>      Host to bind                  (default: localhost)
         --no-open          Do not open the browser
     -h, --help             Show this message

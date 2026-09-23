@@ -17,7 +17,7 @@
     { "index": "05", "title": "结论", "start": 78, "end": 107 }
   ],
   "subtitles": [
-    { "start": 0, "text": "合成画面的字幕由 studio 叠加。" },
-    { "start": 4, "text": "Player 只负责按帧渲染。" }
+    { "start": 0, "text": "字幕由合成画面自行渲染。" },
+    { "start": 4, "text": "这里的清单只驱动右侧时间轴。" }
   ]
 }
