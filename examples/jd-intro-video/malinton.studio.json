@@ -1,0 +1,222 @@
+{
+  "version": 1,
+  "title": "京东集团介绍视频",
+  "meta": {
+    "width": 1920,
+    "height": 1080,
+    "frameRate": 30,
+    "sourceLabel": "源码实时预览"
+  },
+  "duration": 65,
+  "scenes": [
+    {
+      "index": "01",
+      "id": "intro",
+      "title": "京东集团",
+      "description": "科技引领 · 服务至上",
+      "start": 0,
+      "end": 5,
+      "audio": "public/audio/scene1_intro.mp3"
+    },
+    {
+      "index": "02",
+      "id": "profile",
+      "title": "公司简介",
+      "description": "从柜台到世界舞台",
+      "start": 5,
+      "end": 17,
+      "audio": "public/audio/scene2_profile.mp3"
+    },
+    {
+      "index": "03",
+      "id": "history",
+      "title": "发展历程",
+      "description": "二十余载 · 砥砺前行",
+      "start": 17,
+      "end": 28,
+      "audio": "public/audio/scene3_history.mp3"
+    },
+    {
+      "index": "04",
+      "id": "business",
+      "title": "核心业务",
+      "description": "多元协同 · 全面发展",
+      "start": 28,
+      "end": 38,
+      "audio": "public/audio/scene4_business.mp3"
+    },
+    {
+      "index": "05",
+      "id": "technology",
+      "title": "技术实力",
+      "description": "创新驱动 · 智能引领",
+      "start": 38,
+      "end": 47,
+      "audio": "public/audio/scene5_technology.mp3"
+    },
+    {
+      "index": "06",
+      "id": "logistics",
+      "title": "物流体系",
+      "description": "极速履约 · 覆盖全国",
+      "start": 47,
+      "end": 56,
+      "audio": "public/audio/scene6_logistics.mp3"
+    },
+    {
+      "index": "07",
+      "id": "responsibility",
+      "title": "社会责任",
+      "description": "技术为本 · 向善而行",
+      "start": 56,
+      "end": 65,
+      "audio": "public/audio/scene7_responsibility.mp3"
+    }
+  ],
+  "subtitles": [
+    {
+      "id": "intro-cue-1",
+      "text": "京东集团",
+      "start": 0.235,
+      "end": 0.935
+    },
+    {
+      "id": "intro-cue-2",
+      "text": "中国领先的技术驱动型供应链服务企业",
+      "start": 1.055,
+      "end": 3.715
+    },
+    {
+      "id": "profile-cue-1",
+      "text": "京东成立于一九九八年",
+      "start": 5.205,
+      "end": 6.545
+    },
+    {
+      "id": "profile-cue-2",
+      "text": "从一个中关村柜台起步",
+      "start": 6.8,
+      "end": 8.425
+    },
+    {
+      "id": "profile-cue-3",
+      "text": "如今已成长为多元业务的大型企业集团",
+      "start": 8.74,
+      "end": 14.265
+    },
+    {
+      "id": "profile-cue-4",
+      "text": "服务全球数亿用户",
+      "start": 14.565,
+      "end": 16.035
+    },
+    {
+      "id": "history-cue-1",
+      "text": "一九九八年，京东在中关村创立",
+      "start": 17.075,
+      "end": 19.355
+    },
+    {
+      "id": "history-cue-2",
+      "text": "二零零四年转型线上零售",
+      "start": 19.785,
+      "end": 21.705
+    },
+    {
+      "id": "history-cue-3",
+      "text": "二零一四年登陆纳斯达克",
+      "start": 22.045,
+      "end": 23.655
+    },
+    {
+      "id": "history-cue-4",
+      "text": "二零二零年回归香港上市",
+      "start": 23.9,
+      "end": 25.585
+    },
+    {
+      "id": "history-cue-5",
+      "text": "一步步走向世界舞台",
+      "start": 25.725,
+      "end": 26.715
+    },
+    {
+      "id": "business-cue-1",
+      "text": "京东零售连接亿万消费者与品牌商家",
+      "start": 28.125,
+      "end": 30.605
+    },
+    {
+      "id": "business-cue-2",
+      "text": "京东物流打造高效供应链网络",
+      "start": 30.86,
+      "end": 32.965
+    },
+    {
+      "id": "business-cue-3",
+      "text": "京东科技赋能产业数字化",
+      "start": 33.22,
+      "end": 34.905
+    },
+    {
+      "id": "business-cue-4",
+      "text": "京东健康守护全民健康",
+      "start": 35.16,
+      "end": 36.725
+    },
+    {
+      "id": "technology-cue-1",
+      "text": "京东持续投入人工智能、大数据与云计算",
+      "start": 38.125,
+      "end": 41.025
+    },
+    {
+      "id": "technology-cue-2",
+      "text": "以技术创新驱动供应链效率提升",
+      "start": 41.42,
+      "end": 43.595
+    },
+    {
+      "id": "technology-cue-3",
+      "text": "让智能科技融入每一个环节",
+      "start": 43.82,
+      "end": 45.635
+    },
+    {
+      "id": "logistics-cue-1",
+      "text": "京东物流构建覆盖全国的智能仓配网络",
+      "start": 47.255,
+      "end": 50.005
+    },
+    {
+      "id": "logistics-cue-2",
+      "text": "九成以上订单实现当日达或次日达",
+      "start": 50.42,
+      "end": 52.905
+    },
+    {
+      "id": "logistics-cue-3",
+      "text": "用速度重新定义服务体验",
+      "start": 53.305,
+      "end": 54.715
+    },
+    {
+      "id": "responsibility-cue-1",
+      "text": "京东积极履行社会责任",
+      "start": 56.215,
+      "end": 57.775
+    },
+    {
+      "id": "responsibility-cue-2",
+      "text": "推动绿色低碳与乡村振兴",
+      "start": 57.915,
+      "end": 59.935
+    },
+    {
+      "id": "responsibility-cue-3",
+      "text": "技术为本，致力于更高效和可持续的世界",
+      "start": 60.46,
+      "end": 63.555
+    }
+  ]
+}

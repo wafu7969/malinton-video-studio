@@ -1,0 +1,64 @@
+{
+  "version": 1,
+  "title": "判断开源项目价值的标准",
+  "meta": {
+    "width": 1920,
+    "height": 1080,
+    "frameRate": 30,
+    "sourceLabel": "源码实时预览"
+  },
+  "preview": {
+    "type": "html",
+    "src": "composition/index.html"
+  },
+  "scenes": [
+    {
+      "index": "01",
+      "title": "判断开源项目价值的标准",
+      "description": "别看它自己火不火，看它的想法有没有被整个行业抄走",
+      "start": 0,
+      "end": 10
+    },
+    {
+      "index": "02",
+      "title": "OpenClaw 2.0 更新清单",
+      "description": "模型路由更细 · 工具调用收敛到一个协议 · 权限模型前置",
+      "start": 10,
+      "end": 36
+    },
+    {
+      "index": "03",
+      "title": "产品力对比",
+      "description": "安装成本更低，扩展接口更克制，代价是文档更长",
+      "start": 36,
+      "end": 59
+    },
+    {
+      "index": "04",
+      "title": "典型使用场景",
+      "description": "重复运维 · 仓库巡检 · 团队知识入口",
+      "start": 59,
+      "end": 78
+    },
+    {
+      "index": "05",
+      "title": "结论与建议",
+      "description": "选工具的本质，是选你愿意承担的维护成本",
+      "start": 78,
+      "end": 107
+    }
+  ],
+  "subtitles": [
+    { "start": 0, "text": "判断一个开源项目的价值，" },
+    { "start": 2, "text": "别看它自己火不火。" },
+    { "start": 4, "text": "看它的想法有没有被整个行业抄走。" },
+    { "start": 10, "text": "最近这只「龙虾」推出了 2.0 版本，" },
+    { "start": 16, "text": "但它真正值得关注的，" },
+    { "start": 21, "text": "是三个方向的取舍。" },
+    { "start": 36, "text": "接下来我们把它和同类产品放在一起比。" },
+    { "start": 45, "text": "代价是上手时文档更长。" },
+    { "start": 59, "text": "实际用起来，最典型的场景有三个。" },
+    { "start": 78, "text": "所以结论并不复杂。" },
+    { "start": 96, "text": "选工具的本质，是选你愿意承担的维护成本。" }
+  ]
+}

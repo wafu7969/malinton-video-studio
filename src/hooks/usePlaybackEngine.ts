@@ -22,6 +22,12 @@ export interface PlaybackEngine {
   activeSubtitleIndex: number
   /** id of the audio element currently in charge, for the footer readout */
   audioSrc?: string
+  /**
+   * Whether the transport has any sound at all — a manifest track, or a driver
+   * that plays its own audio. False means the volume controls are inert and
+   * should be shown disabled.
+   */
+  hasAudio: boolean
   play: () => void
   pause: () => void
   toggle: () => void
@@ -104,12 +110,42 @@ export function usePlaybackEngine({
   const activeSceneIndex = findActiveIndex(manifest.scenes, currentTime)
   const activeSubtitleIndex = findActiveIndex(manifest.subtitles, currentTime)
 
+  const activeScene = manifest.scenes[activeSceneIndex]
+  const activeSceneAudio = activeScene?.audio
+  const audioBaseTime = activeSceneAudio ? activeScene.start : 0
+
+  /**
+   * The offset of the scene-local audio covering `time`, resolved against that
+   * time rather than against `currentTime`.
+   *
+   * `seek` runs before React has committed the new `currentTime`, so reading
+   * `audioBaseTime` there would use the *previous* scene's offset — and a
+   * target derived from a stale base lands past the end of the new clip, which
+   * makes the clock look unseekable and lets `timeupdate` drag it back.
+   */
+  const audioBaseFor = useCallback(
+    (time: number): number => {
+      const scene = manifest.scenes[findActiveIndex(manifest.scenes, time)]
+      return scene?.audio ? scene.start : 0
+    },
+    [manifest.scenes],
+  )
+
+  /**
+   * Latest clock and transport state, for listeners that outlive a render.
+   * React effects capture their closure, so a media-event handler reading
+   * `currentTime` directly would act on whatever value it saw when attached.
+   */
+  const currentTimeRef = useRef(currentTime)
+  currentTimeRef.current = currentTime
+  const statusRef = useRef(status)
+  statusRef.current = status
+
   /** Scene audio wins over the global track; it is the per-shot voice-over. */
   const audioSrc = useMemo(() => {
-    const sceneAudio = manifest.scenes[activeSceneIndex]?.audio
-    const picked = sceneAudio ?? manifest.audio
+    const picked = activeSceneAudio ?? manifest.audio
     return picked ? resolveAsset(picked) : undefined
-  }, [manifest.scenes, manifest.audio, activeSceneIndex, resolveAsset])
+  }, [activeSceneAudio, manifest.audio, resolveAsset])
 
   /* ------------------------------------------------------------------ */
   /* Clock                                                               */
@@ -170,22 +206,24 @@ export function usePlaybackEngine({
     const audio = audioRef.current
     if (!hasAudio || !audio) return
     const onTime = () => {
+      const absoluteTime = audio.currentTime + audioBaseTime
       // A backwards jump we did not ask for means the element ran out of
       // media and is reporting its clamped position.
       if (audioUsable.current && audio.currentTime >= audio.duration - 0.05) {
         audioUsable.current = false
       }
-      if (audioUsable.current) setCurrentTime(audio.currentTime)
+      if (audioUsable.current) setCurrentTime(absoluteTime)
     }
     const onEnded = () => {
+      const absoluteTime = audio.currentTime + audioBaseTime
       // Only the end of the whole timeline ends playback. Reaching the end of
       // a short audio track must not stop the transport.
-      if (duration - audio.currentTime <= 0.25) {
+      if (duration - absoluteTime <= 0.25) {
         setStatus('ended')
         setCurrentTime(duration)
       } else {
         audioUsable.current = false
-        startWallClock(audio.currentTime)
+        startWallClock(absoluteTime)
       }
     }
     audio.addEventListener('timeupdate', onTime)
@@ -194,7 +232,58 @@ export function usePlaybackEngine({
       audio.removeEventListener('timeupdate', onTime)
       audio.removeEventListener('ended', onEnded)
     }
-  }, [hasAudio, audioSrc, duration, startWallClock])
+  }, [hasAudio, audioSrc, audioBaseTime, duration, startWallClock])
+
+  /**
+   * When the active scene changes, the audio source may switch to another
+   * clip. Re-sync the element from the absolute timeline so scene-local audio
+   * still drives the same global clock.
+   */
+  useEffect(() => {
+    const audio = audioRef.current
+    if (!hasAudio || !audio) return
+
+    /**
+     * Align the element with the studio clock. Reads the *latest* time through
+     * a ref: this runs from media events (`canplay`) as well as from React
+     * effects, and a captured `currentTime` would rewind the transport to
+     * wherever it pointed when the listener was attached.
+     */
+    const syncAudio = () => {
+      const now = currentTimeRef.current
+      const base = audioBaseFor(now)
+      const targetTime = Math.max(0, now - base)
+      if (Number.isFinite(audio.duration)) {
+        audioUsable.current = targetTime < audio.duration - 0.05
+      } else {
+        audioUsable.current = true
+      }
+
+      try {
+        if (Math.abs(audio.currentTime - targetTime) > 0.05) {
+          audio.currentTime = targetTime
+        }
+      } catch {
+        /* metadata not ready yet; retry on the media events below */
+      }
+
+      if (statusRef.current === 'playing') {
+        audio.play().catch(() => {
+          /* autoplay policy — the wall clock keeps the UI honest */
+        })
+      } else {
+        audio.pause()
+      }
+    }
+
+    syncAudio()
+    audio.addEventListener('loadedmetadata', syncAudio)
+    audio.addEventListener('canplay', syncAudio)
+    return () => {
+      audio.removeEventListener('loadedmetadata', syncAudio)
+      audio.removeEventListener('canplay', syncAudio)
+    }
+  }, [hasAudio, audioSrc, audioBaseTime, audioBaseFor])
 
   const seek = useCallback(
     (time: number) => {
@@ -202,11 +291,14 @@ export function usePlaybackEngine({
       setCurrentTime(clamped)
       const audio = audioRef.current
       if (audio && audio.src) {
+        const targetTime = Math.max(0, clamped - audioBaseFor(clamped))
         // Re-arm the element whenever we seek somewhere it can actually reach,
         // so a short track recovers if the user returns to covered ground.
-        if (clamped < audio.duration - 0.05) audioUsable.current = true
+        if (!Number.isFinite(audio.duration) || targetTime < audio.duration - 0.05) {
+          audioUsable.current = true
+        }
         try {
-          audio.currentTime = clamped
+          audio.currentTime = targetTime
         } catch {
           /* seeking before metadata is ready is a no-op, the effect re-syncs */
         }
@@ -220,7 +312,7 @@ export function usePlaybackEngine({
         duration,
       })
     },
-    [duration, frameRate, status, startWallClock, stopWallClock, emit, hasAudio],
+    [duration, frameRate, status, startWallClock, stopWallClock, emit, audioBaseFor],
   )
 
   const play = useCallback(() => {
@@ -297,13 +389,22 @@ export function usePlaybackEngine({
   /* Side effects                                                        */
   /* ------------------------------------------------------------------ */
 
-  // Volume / mute always mirror onto the element.
+  /**
+   * Volume / mute reach both possible sound sources.
+   *
+   * The studio's own `<audio>` covers manifest-declared tracks. A renderer that
+   * plays audio from inside itself — a Remotion composition's `<Audio>`, say —
+   * is out of reach from here, so it gets the same values through the driver.
+   * Without the second half the slider would move and nothing would change.
+   */
   useEffect(() => {
     const audio = audioRef.current
-    if (!audio) return
-    audio.volume = volume
-    audio.muted = muted
-  }, [volume, muted, audioSrc])
+    if (audio) {
+      audio.volume = volume
+      audio.muted = muted
+    }
+    driverRef.current?.setVolume?.(volume, muted)
+  }, [volume, muted, audioSrc, driver])
 
   // Push every clock tick to the driver. This is the hot path during playback:
   // Remotion's `seekTo` is cheap and synchronous, so one call per frame keeps
@@ -335,6 +436,16 @@ export function usePlaybackEngine({
     activeSceneIndex,
     activeSubtitleIndex,
     audioSrc,
+    /**
+     * Whether the transport has any sound to control — either a manifest track
+     * or a driver that plays its own audio. Without the second case the
+     * controls would be greyed out for a Remotion composition whose narration
+     * lives inside the composition.
+     *
+     * Reads `driver` rather than the ref so the value updates on the render
+     * where the driver arrives, instead of one render later.
+     */
+    hasAudio: hasAudio || !!driver?.setVolume,
     play,
     pause,
     toggle,

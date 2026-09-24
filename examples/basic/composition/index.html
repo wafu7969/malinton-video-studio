@@ -161,24 +161,6 @@
         { start: 96, text: '选工具的本质，是选你愿意承担的维护成本。' },
       ]
 
-      const MANIFEST = {
-        title: '判断开源项目价值的标准',
-        meta: {
-          width: 1920,
-          height: 1080,
-          frameRate: 30,
-          sourceLabel: '源码实时预览',
-        },
-        duration: DURATION,
-        scenes: SCENES.map((scene, i) => ({
-          title: scene.title,
-          description: scene.sub,
-          start: scene.start,
-          end: SCENES[i + 1] ? SCENES[i + 1].start : DURATION,
-        })),
-        subtitles: SUBTITLES,
-      }
-
       const el = {
         badge: document.getElementById('badge'),
         title: document.getElementById('title'),
@@ -227,13 +209,10 @@
         }
       })
 
-      // Announce the timeline, then readiness. The studio needs the manifest
-      // before it can lay anything out, and readiness before it pushes a frame.
+      // Paint the first frame, then tell the studio the frame can be driven.
+      // The timeline itself lives in malinton.studio.json — this page only
+      // has to render whatever instant it is handed.
       render(0)
-      parent.postMessage(
-        { type: 'malinton-studio:manifest', manifest: MANIFEST },
-        '*',
-      )
       parent.postMessage({ type: 'malinton-studio:ready' }, '*')
     </script>
   </body>

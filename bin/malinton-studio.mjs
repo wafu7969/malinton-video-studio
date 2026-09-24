@@ -2,12 +2,19 @@
 import { createServer } from 'node:http'
 import { readFile } from 'node:fs/promises'
 import { existsSync, statSync } from 'node:fs'
-import { extname, join, resolve, sep } from 'node:path'
+import { extname, join, relative, resolve, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const HERE = fileURLToPath(new URL('.', import.meta.url))
 const PKG_ROOT = resolve(HERE, '..')
 const DIST = join(PKG_ROOT, 'dist')
+
+/** Names probed in `--root` when `--manifest` is not given. */
+const MANIFEST_CANDIDATES = [
+  'malinton.studio.json',
+  'studio.config.json',
+  'studio.json',
+]
 
 const MIME = {
   '.html': 'text/html; charset=utf-8',
@@ -44,8 +51,7 @@ function parseArgs(argv) {
     port: 3000,
     host: 'localhost',
     open: true,
-    preview: undefined,
-    remotion: undefined,
+    manifest: undefined,
   }
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i]
@@ -62,11 +68,9 @@ function parseArgs(argv) {
       case '--host':
         opts.host = next()
         break
-      case '--preview':
-        opts.preview = next()
-        break
-      case '--remotion':
-        opts.remotion = next()
+      case '--manifest':
+      case '-m':
+        opts.manifest = next()
         break
       case '--no-open':
         opts.open = false
@@ -88,20 +92,19 @@ function printHelp() {
   malinton-studio — preview a scene-based composition in the browser
 
   Usage
-    $ malinton-studio [root] --preview <file> [options]
+    $ malinton-studio [root] [options]
 
   Options
-    -r, --root <dir>        Project root to serve          (default: cwd)
-        --preview <file>    Composition page, relative to root
-                            (e.g. composition/index.html)
-    -p, --port <number>     Port to listen on              (default: 3000)
-        --host <host>       Host to bind                   (default: localhost)
-        --remotion <file>   Remotion entry file            (e.g. src/index.ts)
-        --no-open           Do not open the browser
-    -h, --help              Show this message
+    -r, --root <dir>       Project root to serve          (default: cwd)
+    -m, --manifest <file>  Manifest path, relative to root
+    -p, --port <number>    Port to listen on             (default: 3000)
+        --host <host>      Host to bind                  (default: localhost)
+        --no-open          Do not open the browser
+    -h, --help             Show this message
 
-  There is no manifest file. The composition page reports its own scenes,
-  subtitles, duration and audio over the malinton-studio:manifest message.
+  The manifest is a JSON file describing scenes, subtitles, audio and the
+  preview source. When --manifest is omitted it is discovered in the root as:
+    ${MANIFEST_CANDIDATES.join(', ')}
 
   Docs: https://github.com/wafu7969/malinton-video-studio
 `)
@@ -132,6 +135,22 @@ function safeJoin(root, urlPath) {
   const rootWithSep = root.endsWith(sep) ? root : root + sep
   if (target !== root && !target.startsWith(rootWithSep)) return null
   return target
+}
+
+/**
+ * Locate the manifest. An explicit `--manifest` must exist, since silently
+ * falling back to discovery would hide a typo in the flag.
+ */
+function findManifest(root, explicit) {
+  if (explicit) {
+    const target = resolve(root, String(explicit).replace(/^[/\\]+/, ''))
+    return existsSync(target) ? target : null
+  }
+  for (const name of MANIFEST_CANDIDATES) {
+    const target = join(root, name)
+    if (existsSync(target)) return target
+  }
+  return null
 }
 
 /**
@@ -246,186 +265,27 @@ async function main() {
     process.exit(1)
   }
 
-  if (!opts.preview && !opts.remotion) {
-    process.stderr.write(
-      '\n  ✖ 缺少 --preview 或 --remotion 参数\n' +
-        '    请指定合成页面或 Remotion 入口，例如：\n' +
-        '      malinton-studio --preview composition/index.html\n' +
-        '      malinton-studio --remotion src/index.ts\n\n',
-    )
+  const manifestPath = findManifest(root, opts.manifest)
+
+  if (!manifestPath) {
+    const hint = opts.manifest
+      ? `找不到清单文件: ${opts.manifest}\n    解析为: ${resolve(root, String(opts.manifest).replace(/^[/\\]+/, ''))}`
+      : `在项目根目录下未找到清单文件\n    已查找: ${MANIFEST_CANDIDATES.join(', ')}\n    可以用 --manifest 指定路径`
+    process.stderr.write(`\n  ✖ ${hint}\n\n`)
     process.exit(1)
   }
 
-  let previewPath
-  let viteServer = null
-  
-  if (opts.remotion) {
-    const remotionEntry = String(opts.remotion).replace(/^[/\\]+/, '')
-    if (!existsSync(resolve(root, remotionEntry))) {
-      process.stderr.write(
-        `\n  ✖ 找不到 Remotion 入口文件: ${remotionEntry}\n` +
-          `    解析为: ${resolve(root, remotionEntry)}\n\n`,
-      )
-      process.exit(1)
-    }
-    
-    let createServer
-    let reactPlugin
-    try {
-      const vite = await import('vite')
-      createServer = vite.createServer
-      const pluginReact = await import('@vitejs/plugin-react')
-      reactPlugin = pluginReact.default
-    } catch (e) {
-      process.stderr.write('\n  ✖ 找不到 vite 或 @vitejs/plugin-react。使用 --remotion 模式需要安装它们。\n\n')
-      process.exit(1)
-    }
-    
-    // Write entry files to a temporary directory in node_modules
-    const { mkdir, writeFile } = await import('node:fs/promises')
-    const tempDir = resolve(root, 'node_modules', '.malinton-studio')
-    if (!existsSync(tempDir)) {
-      await mkdir(tempDir, { recursive: true })
-    }
-    
-    await writeFile(join(tempDir, 'index.html'), `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <title>Preview</title>
-          <script>
-            window.onerror = function(msg, url, line, col, error) {
-              document.body.innerHTML += '<div style="color:red;z-index:9999;position:absolute;top:0">' + msg + '</div>';
-            };
-          </script>
-        </head>
-        <body>
-          <div id="root"></div>
-          <script type="module" src="/node_modules/.malinton-studio/entry.tsx"></script>
-        </body>
-      </html>
-    `)
-    
-    await writeFile(join(tempDir, 'entry.tsx'), `
-      import React from 'react';
-      import { createRoot } from 'react-dom/client';
-      import { Player } from '@remotion/player';
-      import { Internals } from 'remotion';
-      import '../../${remotionEntry.replace(/\\/g, '/')}';
-
-      const Main = () => {
-        const [comp, setComp] = React.useState(null);
-        const playerRef = React.useRef(null);
-
-        React.useEffect(() => {
-          Internals.waitForRoot((Root) => {
-            const div = document.createElement('div');
-            div.style.display = 'none';
-            document.body.appendChild(div);
-            
-            const root = createRoot(div);
-            const Wrapper = () => (
-              <Internals.CompositionManagerProvider initialCompositions={[]} initialCanvasContent={[]}>
-                <Root />
-              </Internals.CompositionManagerProvider>
-            );
-            root.render(<Wrapper />);
-            
-            const checkComps = () => {
-              let comps = [];
-              if (window.getStaticCompositions) {
-                comps = window.getStaticCompositions();
-              } else if (Internals.compositionsRef.current) {
-                if (typeof Internals.compositionsRef.current.getCompositions === 'function') {
-                  comps = Internals.compositionsRef.current.getCompositions();
-                } else if (Array.isArray(Internals.compositionsRef.current)) {
-                  comps = Internals.compositionsRef.current;
-                }
-              }
-              if (comps && comps.length > 0) {
-                const comp = comps[0];
-                const duration = comp.durationInFrames / comp.fps;
-                const manifest = {
-                  title: comp.id,
-                  meta: { width: comp.width, height: comp.height, frameRate: comp.fps, sourceLabel: 'Remotion Player' },
-                  duration: duration,
-                  scenes: [{ title: comp.id, start: 0, end: duration }],
-                  subtitles: []
-                };
-                if (window.parent && window.parent !== window) {
-                  window.parent.postMessage({ type: 'malinton-studio:manifest', manifest }, '*');
-                  window.parent.postMessage({ type: 'malinton-studio:ready' }, '*');
-                }
-                setComp(() => comp);
-              } else {
-                setTimeout(checkComps, 50);
-              }
-            };
-            checkComps();
-          });
-          
-          const handler = (e) => {
-            if (!e.data || typeof e.data.type !== 'string') return;
-            if (e.data.type === 'malinton-studio:seek' && playerRef.current) {
-              playerRef.current.seekTo(e.data.frame);
-            } else if (e.data.type === 'malinton-studio:play' && playerRef.current) {
-              playerRef.current.play();
-            } else if (e.data.type === 'malinton-studio:pause' && playerRef.current) {
-              playerRef.current.pause();
-            }
-          };
-          window.addEventListener('message', handler);
-          return () => window.removeEventListener('message', handler);
-        }, []);
-
-        if (!comp) return <div>Loading...</div>;
-        return <Player ref={playerRef} component={comp.component} durationInFrames={comp.durationInFrames} fps={comp.fps} compositionWidth={comp.width} compositionHeight={comp.height} style={{width: '100%', height: '100%'}} controls={true} />;
-      };
-      createRoot(document.getElementById('root')).render(<Main />);
-    `)
-    
-    // Create a virtual vite server
-    const vitePort = opts.port + 1
-    viteServer = await createServer({
-      root: root,
-      server: { port: vitePort, strictPort: false },
-      plugins: [reactPlugin()],
-      optimizeDeps: {
-        include: ['react', 'react-dom/client', '@remotion/player', 'remotion']
-      },
-      logLevel: 'warn'
-    })
-    await viteServer.listen()
-    const actualPort = viteServer.config.server.port
-    previewPath = `http://${opts.host}:${actualPort}/node_modules/.malinton-studio/index.html`
-  } else {
-    // Normalised to a root-relative path with a leading slash, which is what the
-    // shell hands to the driver as the iframe src.
-    const relativePreview = String(opts.preview).replace(/^[/\\]+/, '')
-    previewPath = '/' + relativePreview
-
-    if (!existsSync(resolve(root, relativePreview))) {
-      process.stderr.write(
-        `\n  ✖ 找不到合成页面: ${relativePreview}\n` +
-          `    解析为: ${resolve(root, relativePreview)}\n\n`,
-      )
-      process.exit(1)
-    }
-  }
+  const relativeManifest = relative(root, manifestPath).split(sep).join('/')
 
   const server = createServer(async (req, res) => {
     const url = req.url ?? '/'
     const range = req.headers.range
 
     try {
-      // 1) bootstrap config — tells the shell which composition to load
-      if (url.startsWith('/__studio/config')) {
-        return send(
-          res,
-          200,
-          JSON.stringify({ previewSrc: previewPath }),
-          'application/json; charset=utf-8',
-        )
+      // 1) manifest — re-read on every request so edits show up on refresh
+      if (url.startsWith('/__studio/manifest')) {
+        const body = await readFile(manifestPath, 'utf8')
+        return send(res, 200, body, 'application/json; charset=utf-8')
       }
 
       // 2) studio runtime assets, straight out of dist/
@@ -469,7 +329,7 @@ async function main() {
       '  Malinton Video Studio',
       `  ➜  Local:    ${url}`,
       `  ➜  Root:     ${root}`,
-      `  ➜  Preview:  ${opts.remotion ? '(Remotion) ' + opts.remotion : String(opts.preview).replace(/^[/\\]+/, '')}`,
+      `  ➜  Manifest: ${relativeManifest}`,
       '',
     ]
     process.stdout.write(lines.join('\n') + '\n')

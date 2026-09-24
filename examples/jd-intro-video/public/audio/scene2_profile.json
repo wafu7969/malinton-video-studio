@@ -1,0 +1,341 @@
+{
+  "text": "京东成立于一九九八年，从一个中关村柜台起步，如今已成长为覆盖零售、物流、科技、健康等多元业务的大型企业集团，服务全球数亿用户。",
+  "words": [
+    {
+      "word": "京",
+      "start_time": 0.205,
+      "end_time": 0.265,
+      "confidence": 0.3166594
+    },
+    {
+      "word": "东",
+      "start_time": 0.265,
+      "end_time": 0.325,
+      "confidence": 0.386192
+    },
+    {
+      "word": "成",
+      "start_time": 0.325,
+      "end_time": 0.495,
+      "confidence": 0.91114193
+    },
+    {
+      "word": "立",
+      "start_time": 0.495,
+      "end_time": 0.595,
+      "confidence": 0.85409695
+    },
+    {
+      "word": "于",
+      "start_time": 0.595,
+      "end_time": 0.785,
+      "confidence": 0.93950415
+    },
+    {
+      "word": "一",
+      "start_time": 0.785,
+      "end_time": 0.885,
+      "confidence": 0.88882977
+    },
+    {
+      "word": "九",
+      "start_time": 0.885,
+      "end_time": 1.005,
+      "confidence": 0.8616732
+    },
+    {
+      "word": "九",
+      "start_time": 1.005,
+      "end_time": 1.105,
+      "confidence": 0.916789
+    },
+    {
+      "word": "八",
+      "start_time": 1.105,
+      "end_time": 1.275,
+      "confidence": 0.9693939
+    },
+    {
+      "word": "年，",
+      "start_time": 1.275,
+      "end_time": 1.545,
+      "confidence": 0.9724729
+    },
+    {
+      "word": "从",
+      "start_time": 1.8000417,
+      "end_time": 1.8850417,
+      "confidence": 0.588516
+    },
+    {
+      "word": "一",
+      "start_time": 1.8850417,
+      "end_time": 1.9950416,
+      "confidence": 0.81857646
+    },
+    {
+      "word": "个",
+      "start_time": 1.9950416,
+      "end_time": 2.1450417,
+      "confidence": 0.9370734
+    },
+    {
+      "word": "中",
+      "start_time": 2.1450417,
+      "end_time": 2.3150415,
+      "confidence": 0.94747496
+    },
+    {
+      "word": "关",
+      "start_time": 2.3150415,
+      "end_time": 2.4350417,
+      "confidence": 0.9062856
+    },
+    {
+      "word": "村",
+      "start_time": 2.4350417,
+      "end_time": 2.6450417,
+      "confidence": 0.7555681
+    },
+    {
+      "word": "柜",
+      "start_time": 2.6450417,
+      "end_time": 2.8050418,
+      "confidence": 0.9450361
+    },
+    {
+      "word": "台",
+      "start_time": 2.8050418,
+      "end_time": 2.9850416,
+      "confidence": 0.93850726
+    },
+    {
+      "word": "起",
+      "start_time": 2.9850416,
+      "end_time": 3.1750417,
+      "confidence": 0.9357725
+    },
+    {
+      "word": "步，",
+      "start_time": 3.1750417,
+      "end_time": 3.4250417,
+      "confidence": 0.96908355
+    },
+    {
+      "word": "如",
+      "start_time": 3.7400832,
+      "end_time": 3.8150833,
+      "confidence": 0.41160685
+    },
+    {
+      "word": "今",
+      "start_time": 3.8150833,
+      "end_time": 3.9350832,
+      "confidence": 0.62674904
+    },
+    {
+      "word": "已",
+      "start_time": 3.9350832,
+      "end_time": 4.0350833,
+      "confidence": 0.7015802
+    },
+    {
+      "word": "成",
+      "start_time": 4.0350833,
+      "end_time": 4.2250834,
+      "confidence": 0.9142337
+    },
+    {
+      "word": "长",
+      "start_time": 4.2250834,
+      "end_time": 4.3950834,
+      "confidence": 0.9669548
+    },
+    {
+      "word": "为",
+      "start_time": 4.3950834,
+      "end_time": 4.565083,
+      "confidence": 0.9269433
+    },
+    {
+      "word": "覆",
+      "start_time": 4.565083,
+      "end_time": 4.7450833,
+      "confidence": 0.9711579
+    },
+    {
+      "word": "盖",
+      "start_time": 4.7450833,
+      "end_time": 4.945083,
+      "confidence": 0.9028578
+    },
+    {
+      "word": "零",
+      "start_time": 4.945083,
+      "end_time": 5.155083,
+      "confidence": 0.88072544
+    },
+    {
+      "word": "售、",
+      "start_time": 5.155083,
+      "end_time": 5.1850834,
+      "confidence": 0.14739211
+    },
+    {
+      "word": "物",
+      "start_time": 5.695083,
+      "end_time": 5.7850833,
+      "confidence": 0.71836925
+    },
+    {
+      "word": "流、",
+      "start_time": 5.7850833,
+      "end_time": 5.8150835,
+      "confidence": 0.12157721
+    },
+    {
+      "word": "科",
+      "start_time": 6.115083,
+      "end_time": 6.365083,
+      "confidence": 0.85871756
+    },
+    {
+      "word": "技、",
+      "start_time": 6.365083,
+      "end_time": 6.3950834,
+      "confidence": 0.14897653
+    },
+    {
+      "word": "健",
+      "start_time": 6.9001245,
+      "end_time": 6.9751244,
+      "confidence": 0.55033106
+    },
+    {
+      "word": "康",
+      "start_time": 6.9751244,
+      "end_time": 7.1951246,
+      "confidence": 0.8078054
+    },
+    {
+      "word": "等",
+      "start_time": 7.1951246,
+      "end_time": 7.3551245,
+      "confidence": 0.8549297
+    },
+    {
+      "word": "多",
+      "start_time": 7.3551245,
+      "end_time": 7.6251245,
+      "confidence": 0.92685425
+    },
+    {
+      "word": "元",
+      "start_time": 7.6251245,
+      "end_time": 7.785125,
+      "confidence": 0.8766549
+    },
+    {
+      "word": "业",
+      "start_time": 7.785125,
+      "end_time": 7.9551244,
+      "confidence": 0.9057635
+    },
+    {
+      "word": "务",
+      "start_time": 7.9551244,
+      "end_time": 8.075125,
+      "confidence": 0.8431008
+    },
+    {
+      "word": "的",
+      "start_time": 8.075125,
+      "end_time": 8.195125,
+      "confidence": 0.93278074
+    },
+    {
+      "word": "大",
+      "start_time": 8.195125,
+      "end_time": 8.385124,
+      "confidence": 0.9539513
+    },
+    {
+      "word": "型",
+      "start_time": 8.385124,
+      "end_time": 8.605124,
+      "confidence": 0.9564927
+    },
+    {
+      "word": "企",
+      "start_time": 8.605124,
+      "end_time": 8.8151245,
+      "confidence": 0.8337288
+    },
+    {
+      "word": "业",
+      "start_time": 8.8151245,
+      "end_time": 8.865125,
+      "confidence": 0.67414063
+    },
+    {
+      "word": "集",
+      "start_time": 8.865125,
+      "end_time": 9.005125,
+      "confidence": 0.8515179
+    },
+    {
+      "word": "团，",
+      "start_time": 9.005125,
+      "end_time": 9.265124,
+      "confidence": 0.93629926
+    },
+    {
+      "word": "服",
+      "start_time": 9.5651245,
+      "end_time": 9.795124,
+      "confidence": 0.9183589
+    },
+    {
+      "word": "务",
+      "start_time": 9.795124,
+      "end_time": 9.895124,
+      "confidence": 0.9512964
+    },
+    {
+      "word": "全",
+      "start_time": 9.895124,
+      "end_time": 10.085125,
+      "confidence": 0.9550362
+    },
+    {
+      "word": "球",
+      "start_time": 10.085125,
+      "end_time": 10.275125,
+      "confidence": 0.97393847
+    },
+    {
+      "word": "数",
+      "start_time": 10.275125,
+      "end_time": 10.5651245,
+      "confidence": 0.9454497
+    },
+    {
+      "word": "亿",
+      "start_time": 10.5651245,
+      "end_time": 10.715124,
+      "confidence": 0.95439816
+    },
+    {
+      "word": "用",
+      "start_time": 10.715124,
+      "end_time": 10.825125,
+      "confidence": 0.8841922
+    },
+    {
+      "word": "户。",
+      "start_time": 10.825125,
+      "end_time": 11.035125,
+      "confidence": 0.92038906
+    }
+  ]
+}

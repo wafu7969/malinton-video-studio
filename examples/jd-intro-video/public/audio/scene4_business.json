@@ -1,0 +1,305 @@
+{
+  "text": "京东零售连接亿万消费者与品牌商家，京东物流打造高效供应链网络，京东科技赋能产业数字化，京东健康守护全民健康。",
+  "words": [
+    {
+      "word": "京",
+      "start_time": 0.125,
+      "end_time": 0.195,
+      "confidence": 0.45769894
+    },
+    {
+      "word": "东",
+      "start_time": 0.195,
+      "end_time": 0.335,
+      "confidence": 0.778313
+    },
+    {
+      "word": "零",
+      "start_time": 0.335,
+      "end_time": 0.475,
+      "confidence": 0.9220951
+    },
+    {
+      "word": "售",
+      "start_time": 0.475,
+      "end_time": 0.715,
+      "confidence": 0.95994484
+    },
+    {
+      "word": "连",
+      "start_time": 0.715,
+      "end_time": 0.885,
+      "confidence": 0.95306677
+    },
+    {
+      "word": "接",
+      "start_time": 0.885,
+      "end_time": 1.105,
+      "confidence": 0.92080694
+    },
+    {
+      "word": "亿",
+      "start_time": 1.105,
+      "end_time": 1.275,
+      "confidence": 0.8757861
+    },
+    {
+      "word": "万",
+      "start_time": 1.275,
+      "end_time": 1.395,
+      "confidence": 0.8348418
+    },
+    {
+      "word": "消",
+      "start_time": 1.395,
+      "end_time": 1.565,
+      "confidence": 0.89932555
+    },
+    {
+      "word": "费",
+      "start_time": 1.565,
+      "end_time": 1.695,
+      "confidence": 0.9560711
+    },
+    {
+      "word": "者",
+      "start_time": 1.695,
+      "end_time": 1.835,
+      "confidence": 0.8052824
+    },
+    {
+      "word": "与",
+      "start_time": 1.835,
+      "end_time": 1.915,
+      "confidence": 0.6614246
+    },
+    {
+      "word": "品",
+      "start_time": 1.915,
+      "end_time": 2.095,
+      "confidence": 0.9177668
+    },
+    {
+      "word": "牌",
+      "start_time": 2.095,
+      "end_time": 2.205,
+      "confidence": 0.95105404
+    },
+    {
+      "word": "商",
+      "start_time": 2.205,
+      "end_time": 2.375,
+      "confidence": 0.8709369
+    },
+    {
+      "word": "家，",
+      "start_time": 2.375,
+      "end_time": 2.605,
+      "confidence": 0.94838953
+    },
+    {
+      "word": "京",
+      "start_time": 2.8600416,
+      "end_time": 2.9350417,
+      "confidence": 0.5363119
+    },
+    {
+      "word": "东",
+      "start_time": 2.9350417,
+      "end_time": 3.0050416,
+      "confidence": 0.44898254
+    },
+    {
+      "word": "物",
+      "start_time": 3.0050416,
+      "end_time": 3.1350417,
+      "confidence": 0.7365652
+    },
+    {
+      "word": "流",
+      "start_time": 3.1350417,
+      "end_time": 3.3450418,
+      "confidence": 0.89656615
+    },
+    {
+      "word": "打",
+      "start_time": 3.3450418,
+      "end_time": 3.5350416,
+      "confidence": 0.9288883
+    },
+    {
+      "word": "造",
+      "start_time": 3.5350416,
+      "end_time": 3.7350416,
+      "confidence": 0.9269479
+    },
+    {
+      "word": "高",
+      "start_time": 3.7350416,
+      "end_time": 3.9250417,
+      "confidence": 0.9640385
+    },
+    {
+      "word": "效",
+      "start_time": 3.9250417,
+      "end_time": 4.1350417,
+      "confidence": 0.80078906
+    },
+    {
+      "word": "供",
+      "start_time": 4.1350417,
+      "end_time": 4.3950415,
+      "confidence": 0.9219425
+    },
+    {
+      "word": "应",
+      "start_time": 4.3950415,
+      "end_time": 4.4250417,
+      "confidence": 0.40814918
+    },
+    {
+      "word": "链",
+      "start_time": 4.4250417,
+      "end_time": 4.575042,
+      "confidence": 0.5871687
+    },
+    {
+      "word": "网",
+      "start_time": 4.575042,
+      "end_time": 4.745042,
+      "confidence": 0.8611381
+    },
+    {
+      "word": "络，",
+      "start_time": 4.745042,
+      "end_time": 4.9650416,
+      "confidence": 0.9236968
+    },
+    {
+      "word": "京",
+      "start_time": 5.220083,
+      "end_time": 5.295083,
+      "confidence": 0.6557388
+    },
+    {
+      "word": "东",
+      "start_time": 5.295083,
+      "end_time": 5.425083,
+      "confidence": 0.74614424
+    },
+    {
+      "word": "科",
+      "start_time": 5.425083,
+      "end_time": 5.635083,
+      "confidence": 0.89122105
+    },
+    {
+      "word": "技",
+      "start_time": 5.635083,
+      "end_time": 5.8150835,
+      "confidence": 0.9359019
+    },
+    {
+      "word": "赋",
+      "start_time": 5.8150835,
+      "end_time": 5.9950833,
+      "confidence": 0.93545496
+    },
+    {
+      "word": "能",
+      "start_time": 5.9950833,
+      "end_time": 6.135083,
+      "confidence": 0.9735064
+    },
+    {
+      "word": "产",
+      "start_time": 6.135083,
+      "end_time": 6.335083,
+      "confidence": 0.83602893
+    },
+    {
+      "word": "业",
+      "start_time": 6.335083,
+      "end_time": 6.425083,
+      "confidence": 0.7600968
+    },
+    {
+      "word": "数",
+      "start_time": 6.425083,
+      "end_time": 6.585083,
+      "confidence": 0.9241636
+    },
+    {
+      "word": "字",
+      "start_time": 6.585083,
+      "end_time": 6.7050834,
+      "confidence": 0.8265467
+    },
+    {
+      "word": "化，",
+      "start_time": 6.7050834,
+      "end_time": 6.905083,
+      "confidence": 0.9364473
+    },
+    {
+      "word": "京",
+      "start_time": 7.160125,
+      "end_time": 7.2351246,
+      "confidence": 0.6211581
+    },
+    {
+      "word": "东",
+      "start_time": 7.2351246,
+      "end_time": 7.3451247,
+      "confidence": 0.6085046
+    },
+    {
+      "word": "健",
+      "start_time": 7.3451247,
+      "end_time": 7.495125,
+      "confidence": 0.88744324
+    },
+    {
+      "word": "康",
+      "start_time": 7.495125,
+      "end_time": 7.755125,
+      "confidence": 0.93985593
+    },
+    {
+      "word": "守",
+      "start_time": 7.755125,
+      "end_time": 7.955125,
+      "confidence": 0.9650263
+    },
+    {
+      "word": "护",
+      "start_time": 7.955125,
+      "end_time": 8.115125,
+      "confidence": 0.96856534
+    },
+    {
+      "word": "全",
+      "start_time": 8.115125,
+      "end_time": 8.275125,
+      "confidence": 0.9479992
+    },
+    {
+      "word": "民",
+      "start_time": 8.275125,
+      "end_time": 8.395124,
+      "confidence": 0.8518765
+    },
+    {
+      "word": "健",
+      "start_time": 8.395124,
+      "end_time": 8.535125,
+      "confidence": 0.8898171
+    },
+    {
+      "word": "康。",
+      "start_time": 8.535125,
+      "end_time": 8.725124,
+      "confidence": 0.98475486
+    }
+  ]
+}

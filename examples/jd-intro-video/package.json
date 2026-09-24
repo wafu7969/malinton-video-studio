@@ -1,0 +1,29 @@
+{
+  "name": "jd-intro-video",
+  "version": "1.0.0",
+  "description": "京东集团介绍视频 - Remotion",
+  "private": true,
+  "scripts": {
+    "manifest": "node build-manifest.mjs",
+    "start": "vite",
+    "preview": "vite",
+    "studio": "node ../../bin/malinton-studio.mjs --root ."
+  },
+  "dependencies": {
+    "@remotion/cli": "^4.0.527",
+    "@remotion/google-fonts": "^4.0.527",
+    "@remotion/player": "^4.0.527",
+    "lucide-react": "^0.469.0",
+    "malinton-video-studio": "file:../..",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "remotion": "^4.0.527"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.7"
+  }
+}

@@ -13,7 +13,7 @@
 - **实时源码预览** — iframe 加载你的合成页面，通过 `postMessage` 协议驱动播放与定位
 - **精确的时间轴控制** — 播放 / 暂停、上一段 / 下一段、重播、进度条拖拽、键盘左右键
 - **音频控制** — 音量与静音，支持「每个分镜一段配音」或「整片一条音轨」
-- **单一数据源** — 不需要额外维护清单文件，分镜与字幕由合成页面自己上报
+- **单一数据源** — 分镜、字幕、配音和播放器配置都写在一份 JSON 清单里
 - **零框架耦合** — 只要你的合成页面能响应 seek 消息，就能接进来
 - **可换肤** — 全部颜色都是 `.mvs-root` 上的 CSS 变量
 
@@ -29,48 +29,40 @@ npm install -D malinton-video-studio
 
 ## 快速开始
 
-如果你正在使用 **Remotion**，只需一条命令即可零配置启动：
+### 1. 写一份清单
+
+在项目根目录创建 `malinton.studio.json`：
+
+```json
+{
+  "title": "我的视频",
+  "meta": { "width": 1920, "height": 1080, "frameRate": 30 },
+  "preview": { "type": "html", "src": "composition/index.html" },
+  "audio": "audio/voiceover.mp3",
+  "scenes": [
+    { "title": "开场", "start": 0, "end": 10 },
+    { "title": "正片", "start": 10, "end": 36 }
+  ],
+  "subtitles": [
+    { "start": 0, "text": "第一句字幕。" },
+    { "start": 2.5, "text": "第二句字幕。" }
+  ]
+}
+```
+
+所有时间单位都是**秒**。`preview.src` 与 `audio` 等路径都相对于 CLI 的 `--root`，也就是被服务的项目根目录。
+
+### 2. 启动
 
 ```bash
-npx malinton-studio --remotion src/index.ts
-```
-*(CLI 会自动解析组件并建立通信，下方「让合成页面上报时间轴」的繁琐步骤均可跳过！)*
-
----
-
-### 1. 让合成页面上报时间轴（非 Remotion 项目或需高度自定义）
-
-studio 不读清单文件。**合成页面自己就是唯一数据源** —— 它在启动时把分镜、字幕、时长和音频通过 `postMessage` 报给 studio。
-
-在你的合成页面里加上这段：
-
-```html
-<script>
-  const MANIFEST = {
-    title: '我的视频',
-    meta: { width: 1920, height: 1080, frameRate: 30 },
-    duration: 107,
-    audio: 'audio/voiceover.mp3',          // 可选，整片音轨
-    scenes: [
-      // 每个分镜只需给 start，end 自动取下一个的 start（最后一个取 duration）
-      { title: '开场', start: 0 },
-      { title: '正片', start: 10 },
-    ],
-    subtitles: [
-      // end 同样可省略，默认取下一句的 start
-      { start: 0, text: '第一句字幕。' },
-      { start: 2.5, text: '第二句字幕。' },
-    ],
-  }
-
-  // 告诉 studio 时间轴
-  parent.postMessage({ type: 'malinton-studio:manifest', manifest: MANIFEST }, '*')
-  // 告诉 studio 可以开始推帧了
-  parent.postMessage({ type: 'malinton-studio:ready' }, '*')
-</script>
+npx malinton-studio --root .
 ```
 
-再让它响应 studio 的播放控制，就能获得逐帧精确的定位：
+浏览器会自动打开 `http://localhost:3000`。清单会自动在根目录下查找，也可以在任意位置用 `--manifest <file>` 指定。
+
+### 3. 让合成页面响应播放控制
+
+studio 会向 iframe 发送消息来驱动画面。只要监听这三条消息，就能获得逐帧精确的定位：
 
 ```js
 window.addEventListener('message', (event) => {
@@ -81,6 +73,9 @@ window.addEventListener('message', (event) => {
     case 'malinton-studio:pause': break                       // 暂停
   }
 })
+
+// 页面就绪后知会 studio，让它把第一帧推过来
+parent.postMessage({ type: 'malinton-studio:ready' }, '*')
 ```
 
 `time` 是秒，`frame` 是 `time × frameRate` 取整，按帧渲染时直接用 `frame` 更省事。
@@ -89,51 +84,36 @@ window.addEventListener('message', (event) => {
 
 完整可运行的版本见 [examples/basic/composition/index.html](examples/basic/composition/index.html)。
 
-### 2. 启动
-
-```bash
-npx malinton-studio --root . --preview composition/index.html
-```
-
-浏览器会自动打开 `http://localhost:3000`。`--preview` 指向合成页面，路径相对于 `--root`。
-
-启动后 studio 会先显示加载态，等合成页面上报时间轴后切换到完整界面。
-
 ## CLI
 
 ```
 malinton-studio [root] [options]
 
   -r, --root <dir>       要服务的项目根目录          (默认: 当前目录)
-      --preview <file>   合成页面，相对于 root
-                         （例如 composition/index.html）
-      --remotion <file>  Remotion 动态解析入口，免除编写合成页面的烦恼
-                         （例如 src/index.ts，**--preview 与 --remotion 二选一**）
+  -m, --manifest <file>  清单路径，相对于 root
   -p, --port <number>    监听端口                    (默认: 3000)
       --host <host>      绑定地址                    (默认: localhost)
       --no-open          不自动打开浏览器
   -h, --help             显示帮助
 ```
 
-`--root` 下的静态资源会被直接服务，所以合成页面可以用相对路径引用音频、图片、脚本。静态文件走 HTTP Range（`206 Partial Content`），`<audio>` / `<video>` 才能正常定位播放。
+不传 `--manifest` 时，会在 `--root` 下依次查找 `malinton.studio.json`、`studio.config.json`、`studio.json`。
 
-如果使用 `--remotion` 参数，CLI 会自动为你生成一个虚拟预览页面并代理热更新，**无需任何配置，即插即用**。你只需提供包含 Remotion `registerRoot` 调用的入口文件，它将自动提取 `Composition` 的元数据并对接给 Studio 的时间轴。
+`--root` 下的静态资源会被直接服务，所以合成页面可以用相对路径引用音频、图片、脚本。静态文件走 HTTP Range（`206 Partial Content`），`<audio>` / `<video>` 才能正常定位播放。
 
 ## 作为 React 组件使用
 
-不需要 CLI 时，把 `<Studio>` 直接挂进你自己的应用，用 `driver` 接上渲染器：
+不需要 CLI 时，把 `<Studio>` 直接挂进你自己的应用：
 
 ```tsx
 import { Studio } from 'malinton-video-studio'
 import 'malinton-video-studio/style.css'
-import { useMyDriver } from './useMyDriver'
+import manifest from './malinton.studio.json'
 
 export default function App() {
-  const driver = useMyDriver()
-
   return (
     <Studio
-      driver={driver}
+      manifest={manifest}
       resolveAsset={(p) => new URL(`./assets/${p}`, import.meta.url).href}
       autoPlay
     />
@@ -145,18 +125,15 @@ export default function App() {
 
 | 属性 | 类型 | 说明 |
 | --- | --- | --- |
-| `manifest` | `StudioManifest` | 时间轴数据。**不传也可以** —— iframe 驱动会让合成页面自己上报，此时 studio 先显示加载态 |
-| `driver` | `PreviewDriver` | 自定义预览驱动，见「自定义预览源」。不传则用内置的 iframe 驱动 |
-| `previewSrc` | `string` | 合成页面地址。不传 `driver` 时用它创建内置 iframe 驱动 |
+| `manifest` | `StudioManifest` | **必填**，时间轴数据 |
+| `driver` | `PreviewDriver` | 自定义预览驱动，见「自定义预览源」。不传则按 `manifest.preview` 用内置 iframe 驱动 |
 | `resolveAsset` | `(path: string) => string` | 把清单里的相对路径转成可加载的 URL，默认原样返回 |
-| `autoPlay` | `boolean` | 时间轴就绪后自动播放，默认 `false` |
+| `autoPlay` | `boolean` | 挂载后自动播放，默认 `false` |
 | `className` | `string` | 根元素附加类名，用于覆盖样式 |
-
-**什么时候需要传 `manifest`？** 只有当驱动无法自描述时。iframe 里的页面能自己上报，所以留空；Remotion `<Player>` 没有页面可执行上报代码，就得由宿主把时间轴作为 `manifest` 传进来。
 
 ## 清单字段
 
-清单就是合成页面上报的那个对象，CLI 和 `<Studio manifest>` 用的是同一套结构。
+CLI 读取的 JSON 和 `<Studio manifest>` 用的是同一套结构。
 
 | 字段 | 类型 | 说明 |
 | --- | --- | --- |
@@ -166,10 +143,21 @@ export default function App() {
 | `meta.resolutionLabel` | `string` | 清晰度标签，默认按长边推导（`2K`、`4K`…），可手动覆盖 |
 | `meta.frameRate` | `number` | 帧率，默认 `30`。按帧驱动的预览（如 Remotion）必须与合成一致 |
 | `meta.sourceLabel` | `string` | 预览区左上角的状态文字，默认 `源码实时预览` |
+| `preview` | `object` | 预览源，见下表。不配置则只显示右侧面板 |
 | `audio` | `string` | 整片音轨，当某个分镜没有自己的 `audio` 时回退到它 |
 | `duration` | `number` | 总时长覆盖值，默认取最后一个分镜/字幕的结束时间 |
 | `scenes[]` | `Scene[]` | 分镜列表 |
 | `subtitles[]` | `Subtitle[]` | 字幕列表 |
+
+### `preview`
+
+| 形态 | 说明 |
+| --- | --- |
+| `{ "type": "html", "src": "composition/index.html" }` | 把合成页面加载进 iframe，用 `postMessage` 驱动 |
+| `{ "type": "video", "src": "out/video.mp4" }` | 直接播放渲染好的产物 |
+| `{ "type": "none" }` | 不显示画布，只用右侧的分镜与字幕面板 |
+
+省略 `preview` 等同于 `{ "type": "none" }`。`type` 省略时按 `html` 处理。`html` 形态还可以给 `sandbox` 覆盖 iframe 的沙箱属性。
 
 ### `scenes[]`
 
@@ -221,13 +209,13 @@ export default function App() {
 
 ### 渲染后预览
 
-最省事：渲染出 mp4 后用一个纯 `<video>` 页面做预览源，让它上报时间轴即可。
+最省事：渲染出 mp4 后，把清单的 `preview` 指向一个播放该文件的页面，或直接用 `{ "type": "video", "src": "out/video.mp4" }`。
 
 ### 直接驱动 Remotion Player（推荐）
 
 **不要试图嵌入 Remotion Studio。** Studio 是 Remotion 自己的编辑器外壳，没有对外的 seek 接口，嵌进 iframe 后进度条只能看不能拖。
 
-能逐帧定位的是 `@remotion/player`，它暴露命令式的 `seekTo(frame)`。studio 的 `driver` 属性就是为这种情况留的口子——你只需把 player 句柄适配成 `PreviewDriver`：
+能逐帧定位的是 `@remotion/player`，它暴露命令式的 `seekTo(frame)`。studio 的 `driver` 属性就是为这种情况留的口子——把 player 句柄适配成 `PreviewDriver`，清单仍从 `malinton.studio.json` 读：
 
 ```tsx
 import { createElement, useRef } from 'react'
@@ -236,10 +224,26 @@ import type { PreviewDriver } from 'malinton-video-studio'
 
 export function useRemotionDriver({ durationInFrames, fps, width, height }) {
   const playerRef = useRef<PlayerRef>(null)
+  // player 挂载前 setVolume 会被丢掉，先存起来，等第一次 seek 再补上
+  const wantVolume = useRef<{ volume: number; muted: boolean } | null>(null)
+  const volumeApplied = useRef(false)
+
+  const applyVolume = () => {
+    const want = wantVolume.current
+    const player = playerRef.current
+    if (!want || !player) return
+    player.setVolume(want.volume)
+    if (want.muted) player.mute()
+    else player.unmute()
+    volumeApplied.current = true
+  }
 
   return useRef<PreviewDriver>({
     isReady: () => !!playerRef.current,
-    seek: ({ frame }) => playerRef.current?.seekTo(frame),
+    seek: ({ frame }) => {
+      playerRef.current?.seekTo(frame)
+      if (!volumeApplied.current) applyVolume()  // 补齐挂载期间漏掉的音量
+    },
     play: ({ frame }) => {
       playerRef.current?.play()   // 唤醒 AudioContext，启动合成内的 <Audio>
       playerRef.current?.pause()  // 立刻按停，别让 player 自己的时钟跑起来
@@ -247,6 +251,12 @@ export function useRemotionDriver({ durationInFrames, fps, width, height }) {
     },
     pause: ({ frame }) => { playerRef.current?.pause(); playerRef.current?.seekTo(frame) },
     reload: () => playerRef.current?.seekTo(0),
+    // 合成里的 <Audio> 归 player 管，音量滑块必须转发过去才有作用
+    setVolume: (volume, muted) => {
+      wantVolume.current = { volume, muted }
+      if (playerRef.current) applyVolume()
+      else volumeApplied.current = false
+    },
     render: () => createElement(Player, {
       ref: playerRef,
       component: MyComposition,
@@ -260,10 +270,12 @@ export function useRemotionDriver({ durationInFrames, fps, width, height }) {
 }
 ```
 
-然后把它交给 `<Studio>`。注意 **Remotion 必须传 `manifest`** —— `<Player>` 不是页面，没有地方执行上报代码：
+然后把它和清单一起交给 `<Studio>`：
 
 ```tsx
-<Studio manifest={manifest} driver={driver} />
+import manifest from './malinton.studio.json'
+
+<Studio manifest={manifest as StudioManifest} driver={driver} />
 ```
 
 两条约束必须满足，否则画面和进度条会对不上：
@@ -298,15 +310,21 @@ interface PreviewDriver {
   pause?(frame: DriverFrame): void
   /** 「重新加载源码」按钮。 */
   reload?(): void
+  /**
+   * 把播放器的音量与静音状态交给真正发声的那一端。
+   *
+   * 只有自己持有音频的渲染器才需要实现。清单里的音频由 studio 自己的
+   * `<audio>` 元素播放，控件直接作用其上；但 `@remotion/player` 这类
+   * 渲染器的声音来自合成内部的 `<Audio>`，studio 够不着——没有这个钩子，
+   * 音量滑块会看起来完全失灵。
+   *
+   * 值变化时调用一次，驱动挂载时也会调用一次以应用初始状态。
+   */
+  setVolume?(volume: number, muted: boolean): void
   /** 挂载到画布区域，可返回 iframe / Player / canvas。 */
   render?(): ReactNode
   /** 返回 false 时 studio 会跳过推帧，等它就绪。 */
   isReady?(): boolean
-  /**
-   * 预览源自己上报时间轴。iframe 驱动用这个收合成页面的 manifest。
-   * 返回取消订阅函数。
-   */
-  subscribeManifest?(listener: (manifest: StudioManifest) => void): () => void
   /**
    * 释放 React 之外挂的资源——window 监听器、observer、定时器。
    * 驱动被替换或卸载时调用。
@@ -327,8 +345,9 @@ interface DriverFrame {
 - **`seek` 必须由传入的 `frame` 推导画面**，不要自己计时，否则拖拽会漂移。
 - **`render()` 里别写内联的 `ref` 回调**。React 在 ref 身份变化时会先用 `null` 调一次旧的，跟真正的卸载无法区分——如果在那里重置了就绪标记，后续的 seek 会被静默丢掉。用稳定的函数引用。
 - **`isReady()` 返回 false 时 seek 会被跳过**，所以它只该反映「现在能不能画」，不要用它表达其他状态。
+- **自己持有音频就实现 `setVolume`**。否则音量滑块只对清单音轨有效，对合成内部的 `<Audio>` 无效——而用户拖滑块时预期声音一定变小，不该让他去分辨「这个滑块管哪类音源」。置灰判断也由此而来：只要驱动实现了 `setVolume`，控件就是可用的。
 
-不传 `driver` 时，studio 会用内置的 iframe 驱动，指向 `previewSrc`（CLI 下就是 `--preview`）指向的页面。
+不传 `driver` 时，studio 会按 `manifest.preview` 选中内置实现：`html` → iframe 驱动，指向 `preview.src`；`video` → `<video>`。这两个也都在 `src/drivers/` 里，可以直接参考。
 
 ## 本地开发
 

@@ -1,0 +1,335 @@
+{
+  "text": "一九九八年，京东在中关村创立。二零零四年转型线上零售，二零一四年登陆纳斯达克，二零二零年回归香港上市，一步步走向世界舞台。",
+  "words": [
+    {
+      "word": "一",
+      "start_time": 0.075,
+      "end_time": 0.175,
+      "confidence": 0.8230472
+    },
+    {
+      "word": "九",
+      "start_time": 0.175,
+      "end_time": 0.305,
+      "confidence": 0.97682714
+    },
+    {
+      "word": "九",
+      "start_time": 0.305,
+      "end_time": 0.415,
+      "confidence": 0.9214113
+    },
+    {
+      "word": "八",
+      "start_time": 0.415,
+      "end_time": 0.585,
+      "confidence": 0.96470994
+    },
+    {
+      "word": "年，",
+      "start_time": 0.585,
+      "end_time": 0.835,
+      "confidence": 0.88433486
+    },
+    {
+      "word": "京",
+      "start_time": 0.835,
+      "end_time": 1.035,
+      "confidence": 0.8992257
+    },
+    {
+      "word": "东",
+      "start_time": 1.035,
+      "end_time": 1.225,
+      "confidence": 0.963685
+    },
+    {
+      "word": "在",
+      "start_time": 1.225,
+      "end_time": 1.445,
+      "confidence": 0.96318626
+    },
+    {
+      "word": "中",
+      "start_time": 1.445,
+      "end_time": 1.605,
+      "confidence": 0.9666416
+    },
+    {
+      "word": "关",
+      "start_time": 1.605,
+      "end_time": 1.765,
+      "confidence": 0.80811036
+    },
+    {
+      "word": "村",
+      "start_time": 1.765,
+      "end_time": 1.975,
+      "confidence": 0.79121876
+    },
+    {
+      "word": "创",
+      "start_time": 1.975,
+      "end_time": 2.195,
+      "confidence": 0.8806248
+    },
+    {
+      "word": "立。",
+      "start_time": 2.195,
+      "end_time": 2.355,
+      "confidence": 0.9198923
+    },
+    {
+      "word": "二",
+      "start_time": 2.7850418,
+      "end_time": 2.8750417,
+      "confidence": 0.8229658
+    },
+    {
+      "word": "零",
+      "start_time": 2.8750417,
+      "end_time": 2.9850416,
+      "confidence": 0.9711588
+    },
+    {
+      "word": "零",
+      "start_time": 2.9850416,
+      "end_time": 3.1150417,
+      "confidence": 0.9557707
+    },
+    {
+      "word": "四",
+      "start_time": 3.1150417,
+      "end_time": 3.3050418,
+      "confidence": 0.9205658
+    },
+    {
+      "word": "年",
+      "start_time": 3.3050418,
+      "end_time": 3.4950418,
+      "confidence": 0.89292
+    },
+    {
+      "word": "转",
+      "start_time": 3.4950418,
+      "end_time": 3.6850417,
+      "confidence": 0.96387
+    },
+    {
+      "word": "型",
+      "start_time": 3.6850417,
+      "end_time": 3.8950417,
+      "confidence": 0.9335235
+    },
+    {
+      "word": "线",
+      "start_time": 3.8950417,
+      "end_time": 4.1150417,
+      "confidence": 0.9537311
+    },
+    {
+      "word": "上",
+      "start_time": 4.1150417,
+      "end_time": 4.2750416,
+      "confidence": 0.975337
+    },
+    {
+      "word": "零",
+      "start_time": 4.2750416,
+      "end_time": 4.415042,
+      "confidence": 0.9057205
+    },
+    {
+      "word": "售，",
+      "start_time": 4.415042,
+      "end_time": 4.705042,
+      "confidence": 0.97139645
+    },
+    {
+      "word": "二",
+      "start_time": 5.0450835,
+      "end_time": 5.1350837,
+      "confidence": 0.7856442
+    },
+    {
+      "word": "零",
+      "start_time": 5.1350837,
+      "end_time": 5.2450833,
+      "confidence": 0.9407078
+    },
+    {
+      "word": "一",
+      "start_time": 5.2450833,
+      "end_time": 5.3250833,
+      "confidence": 0.8960286
+    },
+    {
+      "word": "四",
+      "start_time": 5.3250833,
+      "end_time": 5.4850836,
+      "confidence": 0.8966929
+    },
+    {
+      "word": "年",
+      "start_time": 5.4850836,
+      "end_time": 5.6650834,
+      "confidence": 0.88286626
+    },
+    {
+      "word": "登",
+      "start_time": 5.6650834,
+      "end_time": 5.845083,
+      "confidence": 0.7105264
+    },
+    {
+      "word": "陆",
+      "start_time": 5.845083,
+      "end_time": 5.9750834,
+      "confidence": 0.8857057
+    },
+    {
+      "word": "纳",
+      "start_time": 5.9750834,
+      "end_time": 6.1250834,
+      "confidence": 0.9145687
+    },
+    {
+      "word": "斯",
+      "start_time": 6.1250834,
+      "end_time": 6.2250834,
+      "confidence": 0.5814204
+    },
+    {
+      "word": "达",
+      "start_time": 6.2250834,
+      "end_time": 6.3750834,
+      "confidence": 0.7670351
+    },
+    {
+      "word": "克，",
+      "start_time": 6.3750834,
+      "end_time": 6.6550837,
+      "confidence": 0.92625284
+    },
+    {
+      "word": "二",
+      "start_time": 6.900125,
+      "end_time": 7.005125,
+      "confidence": 0.86768067
+    },
+    {
+      "word": "零",
+      "start_time": 7.005125,
+      "end_time": 7.115125,
+      "confidence": 0.95834523
+    },
+    {
+      "word": "二",
+      "start_time": 7.115125,
+      "end_time": 7.245125,
+      "confidence": 0.98082876
+    },
+    {
+      "word": "零",
+      "start_time": 7.245125,
+      "end_time": 7.365125,
+      "confidence": 0.96689504
+    },
+    {
+      "word": "年",
+      "start_time": 7.365125,
+      "end_time": 7.525125,
+      "confidence": 0.94986564
+    },
+    {
+      "word": "回",
+      "start_time": 7.525125,
+      "end_time": 7.695125,
+      "confidence": 0.94815606
+    },
+    {
+      "word": "归",
+      "start_time": 7.695125,
+      "end_time": 7.835125,
+      "confidence": 0.9521261
+    },
+    {
+      "word": "香",
+      "start_time": 7.835125,
+      "end_time": 8.005125,
+      "confidence": 0.8889589
+    },
+    {
+      "word": "港",
+      "start_time": 8.005125,
+      "end_time": 8.115125,
+      "confidence": 0.85025895
+    },
+    {
+      "word": "上",
+      "start_time": 8.115125,
+      "end_time": 8.295125,
+      "confidence": 0.9220122
+    },
+    {
+      "word": "市，",
+      "start_time": 8.295125,
+      "end_time": 8.585125,
+      "confidence": 0.9779628
+    },
+    {
+      "word": "一",
+      "start_time": 8.725125,
+      "end_time": 8.875125,
+      "confidence": 0.9021989
+    },
+    {
+      "word": "步",
+      "start_time": 8.875125,
+      "end_time": 9.005125,
+      "confidence": 0.96653664
+    },
+    {
+      "word": "步",
+      "start_time": 9.005125,
+      "end_time": 9.175125,
+      "confidence": 0.94740504
+    },
+    {
+      "word": "走",
+      "start_time": 9.175125,
+      "end_time": 9.305125,
+      "confidence": 0.9320437
+    },
+    {
+      "word": "向",
+      "start_time": 9.305125,
+      "end_time": 9.465125,
+      "confidence": 0.9638969
+    },
+    {
+      "word": "世",
+      "start_time": 9.465125,
+      "end_time": 9.5651245,
+      "confidence": 0.6888905
+    },
+    {
+      "word": "界",
+      "start_time": 9.5651245,
+      "end_time": 9.625125,
+      "confidence": 0.13955216
+    },
+    {
+      "word": "舞",
+      "start_time": 9.625125,
+      "end_time": 9.655125,
+      "confidence": 0.1978677
+    },
+    {
+      "word": "台。",
+      "start_time": 9.655125,
+      "end_time": 9.715125,
+      "confidence": 0.20019557
+    }
+  ]
+}

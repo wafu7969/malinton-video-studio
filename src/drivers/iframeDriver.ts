@@ -1,7 +1,5 @@
 import { createElement } from 'react'
 import type { DriverFrame, PreviewDriver } from '../driver'
-import { isManifestReport } from '../driver'
-import type { StudioManifest } from '../types'
 
 /**
  * The default driver for `preview.type === 'html'`: loads a composition page in
@@ -14,10 +12,10 @@ import type { StudioManifest } from '../types'
  *   studio -> frame : { type: 'malinton-studio:play',  time, frame, frameRate }
  *   studio -> frame : { type: 'malinton-studio:pause', time }
  *   frame -> studio : { type: 'malinton-studio:ready' }
- *   frame -> studio : { type: 'malinton-studio:manifest', manifest }
  *
- * There is no manifest file: the page describes its own scenes, subtitles,
- * duration and audio, so the timeline never has to be maintained twice.
+ * The frame does not describe itself — the manifest already holds the scenes,
+ * subtitles, duration and audio. The frame only has to paint the instant it is
+ * told to, which keeps the timeline in exactly one place.
  *
  * Frames pushed before the page is ready would be dropped, so the driver holds
  * onto the latest one and flushes it once the page announces itself.
@@ -39,11 +37,6 @@ export function createIframeDriver({
   let ready = false
   let pending: DriverFrame | null = null
 
-  /** Listeners registered by the studio before the iframe exists. */
-  const manifestListeners = new Set<(manifest: StudioManifest) => void>()
-  /** The last report, replayed to any listener registered afterwards. */
-  let lastManifest: StudioManifest | null = null
-
   const post = (message: Record<string, unknown>) => {
     frameRef.current?.contentWindow?.postMessage(message, '*')
   }
@@ -62,12 +55,6 @@ export function createIframeDriver({
   const onMessage = (event: MessageEvent): void => {
     // Only trust the frame we mounted.
     if (frameRef.current && event.source !== frameRef.current.contentWindow) return
-
-    if (isManifestReport(event.data)) {
-      lastManifest = event.data.manifest
-      manifestListeners.forEach((listener) => listener(event.data.manifest))
-      return
-    }
 
     const data = event.data as { type?: string } | null
     if (data?.type !== 'malinton-studio:ready') return
@@ -96,14 +83,6 @@ export function createIframeDriver({
 
     dispose() {
       window.removeEventListener('message', onMessage)
-      manifestListeners.clear()
-    },
-
-    subscribeManifest(listener) {
-      manifestListeners.add(listener)
-      // The page may have reported before the studio subscribed.
-      if (lastManifest) listener(lastManifest)
-      return () => manifestListeners.delete(listener)
     },
 
     seek(next) {

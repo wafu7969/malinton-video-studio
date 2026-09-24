@@ -23,16 +23,6 @@ export interface PreviewPanelProps {
   onReloadSource: () => void
 }
 
-/**
- * Just the canvas surface, without any manifest-dependent chrome.
- *
- * The composition page describes itself, so the frame has to be mounted before
- * a manifest exists — otherwise nothing would ever load to report one.
- */
-export function PreviewCanvas({ driver }: { driver?: PreviewDriver }) {
-  return <>{driver?.render?.() ?? null}</>
-}
-
 export function PreviewPanel({
   manifest,
   engine,
@@ -47,10 +37,11 @@ export function PreviewPanel({
   const canvas = driver?.render?.()
 
   /**
-   * The manifest may declare no audio at all. The transport still renders the
-   * volume controls in that case, but greys them out.
+   * The manifest may declare no audio, but a driver can still be playing some
+   * of its own (a Remotion composition's `<Audio>`). Only grey the controls out
+   * when there is genuinely nothing to control.
    */
-  const hasAudio = !!engine.audioSrc
+  const hasAudio = engine.hasAudio
 
   const handleScrub = useCallback(
     (event: React.MouseEvent<HTMLDivElement>) => {
@@ -172,7 +163,7 @@ export function PreviewPanel({
             */}
             <div
               className={`mvs-volume${hasAudio ? '' : ' is-disabled'}`}
-              title={hasAudio ? undefined : '清单中未配置音频'}
+              title={hasAudio ? undefined : '当前预览源没有音频'}
             >
               <span className="mvs-volume__label">音量</span>
               <input
@@ -191,7 +182,7 @@ export function PreviewPanel({
 
             <label
               className={`mvs-mute${hasAudio ? '' : ' is-disabled'}`}
-              title={hasAudio ? undefined : '清单中未配置音频'}
+              title={hasAudio ? undefined : '当前预览源没有音频'}
             >
               <Switch
                 checked={engine.muted}

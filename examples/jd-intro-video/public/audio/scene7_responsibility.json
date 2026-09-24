@@ -1,0 +1,233 @@
+{
+  "text": "京东积极履行社会责任，推动绿色低碳与乡村振兴。技术为本，致力于更高效和可持续的世界。",
+  "words": [
+    {
+      "word": "京",
+      "start_time": 0.215,
+      "end_time": 0.275,
+      "confidence": 0.2596811
+    },
+    {
+      "word": "东",
+      "start_time": 0.275,
+      "end_time": 0.345,
+      "confidence": 0.38702458
+    },
+    {
+      "word": "积",
+      "start_time": 0.345,
+      "end_time": 0.535,
+      "confidence": 0.7630543
+    },
+    {
+      "word": "极",
+      "start_time": 0.535,
+      "end_time": 0.685,
+      "confidence": 0.87874806
+    },
+    {
+      "word": "履",
+      "start_time": 0.685,
+      "end_time": 0.825,
+      "confidence": 0.9442252
+    },
+    {
+      "word": "行",
+      "start_time": 0.825,
+      "end_time": 1.075,
+      "confidence": 0.83814275
+    },
+    {
+      "word": "社",
+      "start_time": 1.075,
+      "end_time": 1.245,
+      "confidence": 0.8410273
+    },
+    {
+      "word": "会",
+      "start_time": 1.245,
+      "end_time": 1.365,
+      "confidence": 0.9698296
+    },
+    {
+      "word": "责",
+      "start_time": 1.365,
+      "end_time": 1.545,
+      "confidence": 0.90238744
+    },
+    {
+      "word": "任，",
+      "start_time": 1.545,
+      "end_time": 1.775,
+      "confidence": 0.9318992
+    },
+    {
+      "word": "推",
+      "start_time": 1.915,
+      "end_time": 2.095,
+      "confidence": 0.9672171
+    },
+    {
+      "word": "动",
+      "start_time": 2.095,
+      "end_time": 2.295,
+      "confidence": 0.92041105
+    },
+    {
+      "word": "绿",
+      "start_time": 2.295,
+      "end_time": 2.445,
+      "confidence": 0.9318839
+    },
+    {
+      "word": "色",
+      "start_time": 2.445,
+      "end_time": 2.665,
+      "confidence": 0.88795644
+    },
+    {
+      "word": "低",
+      "start_time": 2.665,
+      "end_time": 2.805,
+      "confidence": 0.7184421
+    },
+    {
+      "word": "碳",
+      "start_time": 2.805,
+      "end_time": 3.035,
+      "confidence": 0.86091036
+    },
+    {
+      "word": "与",
+      "start_time": 3.035,
+      "end_time": 3.145,
+      "confidence": 0.8331092
+    },
+    {
+      "word": "乡",
+      "start_time": 3.145,
+      "end_time": 3.345,
+      "confidence": 0.96659213
+    },
+    {
+      "word": "村",
+      "start_time": 3.345,
+      "end_time": 3.495,
+      "confidence": 0.8807404
+    },
+    {
+      "word": "振",
+      "start_time": 3.495,
+      "end_time": 3.675,
+      "confidence": 0.83247286
+    },
+    {
+      "word": "兴。",
+      "start_time": 3.675,
+      "end_time": 3.935,
+      "confidence": 0.7380411
+    },
+    {
+      "word": "技",
+      "start_time": 4.4600415,
+      "end_time": 4.5650415,
+      "confidence": 0.8539812
+    },
+    {
+      "word": "术",
+      "start_time": 4.5650415,
+      "end_time": 4.7250414,
+      "confidence": 0.8499866
+    },
+    {
+      "word": "为",
+      "start_time": 4.7250414,
+      "end_time": 4.8850417,
+      "confidence": 0.846092
+    },
+    {
+      "word": "本，",
+      "start_time": 4.8850417,
+      "end_time": 5.0950413,
+      "confidence": 0.92690957
+    },
+    {
+      "word": "致",
+      "start_time": 5.3150415,
+      "end_time": 5.4650416,
+      "confidence": 0.8680452
+    },
+    {
+      "word": "力",
+      "start_time": 5.4650416,
+      "end_time": 5.5650415,
+      "confidence": 0.7895067
+    },
+    {
+      "word": "于",
+      "start_time": 5.5650415,
+      "end_time": 5.7350416,
+      "confidence": 0.94480854
+    },
+    {
+      "word": "更",
+      "start_time": 5.7350416,
+      "end_time": 5.9250417,
+      "confidence": 0.9395249
+    },
+    {
+      "word": "高",
+      "start_time": 5.9250417,
+      "end_time": 6.135041,
+      "confidence": 0.98050654
+    },
+    {
+      "word": "效",
+      "start_time": 6.135041,
+      "end_time": 6.3350415,
+      "confidence": 0.8801759
+    },
+    {
+      "word": "和",
+      "start_time": 6.3350415,
+      "end_time": 6.5150414,
+      "confidence": 0.9526831
+    },
+    {
+      "word": "可",
+      "start_time": 6.5150414,
+      "end_time": 6.7050414,
+      "confidence": 0.9333366
+    },
+    {
+      "word": "持",
+      "start_time": 6.7050414,
+      "end_time": 6.9450417,
+      "confidence": 0.94908535
+    },
+    {
+      "word": "续",
+      "start_time": 6.9450417,
+      "end_time": 7.0850415,
+      "confidence": 0.89322543
+    },
+    {
+      "word": "的",
+      "start_time": 7.0850415,
+      "end_time": 7.175041,
+      "confidence": 0.9577324
+    },
+    {
+      "word": "世",
+      "start_time": 7.175041,
+      "end_time": 7.3650417,
+      "confidence": 0.9386911
+    },
+    {
+      "word": "界。",
+      "start_time": 7.3650417,
+      "end_time": 7.5550413,
+      "confidence": 0.9498078
+    }
+  ]
+}

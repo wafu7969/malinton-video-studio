@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "title": "Remotion 合成预览示例",
+  "meta": {
+    "width": 1920,
+    "height": 1080,
+    "frameRate": 30,
+    "sourceLabel": "Remotion Player"
+  },
+  "scenes": [
+    { "title": "开场", "start": 0, "end": 10 },
+    { "title": "正片", "start": 10, "end": 36 },
+    { "title": "对比", "start": 36, "end": 59 },
+    { "title": "场景", "start": 59, "end": 78 },
+    { "title": "结论", "start": 78, "end": 107 }
+  ],
+  "subtitles": [
+    { "start": 0, "text": "字幕由合成画面自行渲染。" },
+    { "start": 4, "text": "这份清单只驱动右侧时间轴。" }
+  ]
+}

@@ -1,0 +1,263 @@
+{
+  "text": "京东物流构建覆盖全国的智能仓配网络，九成以上订单实现当日达或次日达，用速度重新定义服务体验。",
+  "words": [
+    {
+      "word": "京",
+      "start_time": 0.255,
+      "end_time": 0.385,
+      "confidence": 0.90409386
+    },
+    {
+      "word": "东",
+      "start_time": 0.385,
+      "end_time": 0.485,
+      "confidence": 0.70976985
+    },
+    {
+      "word": "物",
+      "start_time": 0.485,
+      "end_time": 0.605,
+      "confidence": 0.7628743
+    },
+    {
+      "word": "流",
+      "start_time": 0.605,
+      "end_time": 0.765,
+      "confidence": 0.9252942
+    },
+    {
+      "word": "构",
+      "start_time": 0.765,
+      "end_time": 0.935,
+      "confidence": 0.9544985
+    },
+    {
+      "word": "建",
+      "start_time": 0.935,
+      "end_time": 1.085,
+      "confidence": 0.8804019
+    },
+    {
+      "word": "覆",
+      "start_time": 1.085,
+      "end_time": 1.275,
+      "confidence": 0.928401
+    },
+    {
+      "word": "盖",
+      "start_time": 1.275,
+      "end_time": 1.425,
+      "confidence": 0.8514795
+    },
+    {
+      "word": "全",
+      "start_time": 1.425,
+      "end_time": 1.695,
+      "confidence": 0.9392665
+    },
+    {
+      "word": "国",
+      "start_time": 1.695,
+      "end_time": 1.845,
+      "confidence": 0.9750448
+    },
+    {
+      "word": "的",
+      "start_time": 1.845,
+      "end_time": 1.955,
+      "confidence": 0.9742631
+    },
+    {
+      "word": "智",
+      "start_time": 1.955,
+      "end_time": 2.105,
+      "confidence": 0.9550931
+    },
+    {
+      "word": "能",
+      "start_time": 2.105,
+      "end_time": 2.265,
+      "confidence": 0.98053294
+    },
+    {
+      "word": "仓",
+      "start_time": 2.265,
+      "end_time": 2.475,
+      "confidence": 0.86981666
+    },
+    {
+      "word": "配",
+      "start_time": 2.475,
+      "end_time": 2.645,
+      "confidence": 0.9451372
+    },
+    {
+      "word": "网",
+      "start_time": 2.645,
+      "end_time": 2.785,
+      "confidence": 0.9108376
+    },
+    {
+      "word": "络，",
+      "start_time": 2.785,
+      "end_time": 3.005,
+      "confidence": 0.9294224
+    },
+    {
+      "word": "九",
+      "start_time": 3.4200416,
+      "end_time": 3.5150416,
+      "confidence": 0.54074293
+    },
+    {
+      "word": "成",
+      "start_time": 3.5150416,
+      "end_time": 3.6750417,
+      "confidence": 0.8507418
+    },
+    {
+      "word": "以",
+      "start_time": 3.6750417,
+      "end_time": 3.7850416,
+      "confidence": 0.8513675
+    },
+    {
+      "word": "上",
+      "start_time": 3.7850416,
+      "end_time": 3.9450417,
+      "confidence": 0.9433377
+    },
+    {
+      "word": "订",
+      "start_time": 3.9450417,
+      "end_time": 4.1050415,
+      "confidence": 0.9351802
+    },
+    {
+      "word": "单",
+      "start_time": 4.1050415,
+      "end_time": 4.2450414,
+      "confidence": 0.8965051
+    },
+    {
+      "word": "实",
+      "start_time": 4.2450414,
+      "end_time": 4.4350414,
+      "confidence": 0.95771724
+    },
+    {
+      "word": "现",
+      "start_time": 4.4350414,
+      "end_time": 4.5850415,
+      "confidence": 0.9329911
+    },
+    {
+      "word": "当",
+      "start_time": 4.5850415,
+      "end_time": 4.8150415,
+      "confidence": 0.87376356
+    },
+    {
+      "word": "日",
+      "start_time": 4.8150415,
+      "end_time": 4.9450417,
+      "confidence": 0.9135121
+    },
+    {
+      "word": "达",
+      "start_time": 4.9450417,
+      "end_time": 5.1250415,
+      "confidence": 0.9113463
+    },
+    {
+      "word": "或",
+      "start_time": 5.1250415,
+      "end_time": 5.3050413,
+      "confidence": 0.9187665
+    },
+    {
+      "word": "次",
+      "start_time": 5.3050413,
+      "end_time": 5.6050415,
+      "confidence": 0.87039757
+    },
+    {
+      "word": "日",
+      "start_time": 5.6050415,
+      "end_time": 5.6950417,
+      "confidence": 0.72737527
+    },
+    {
+      "word": "达，",
+      "start_time": 5.6950417,
+      "end_time": 5.9050417,
+      "confidence": 0.80495805
+    },
+    {
+      "word": "用",
+      "start_time": 6.3050833,
+      "end_time": 6.405083,
+      "confidence": 0.8346526
+    },
+    {
+      "word": "速",
+      "start_time": 6.405083,
+      "end_time": 6.675083,
+      "confidence": 0.77940863
+    },
+    {
+      "word": "度",
+      "start_time": 6.675083,
+      "end_time": 6.815083,
+      "confidence": 0.9489003
+    },
+    {
+      "word": "重",
+      "start_time": 6.815083,
+      "end_time": 7.005083,
+      "confidence": 0.9566374
+    },
+    {
+      "word": "新",
+      "start_time": 7.005083,
+      "end_time": 7.2050834,
+      "confidence": 0.949257
+    },
+    {
+      "word": "定",
+      "start_time": 7.2050834,
+      "end_time": 7.385083,
+      "confidence": 0.89329016
+    },
+    {
+      "word": "义",
+      "start_time": 7.385083,
+      "end_time": 7.485083,
+      "confidence": 0.8450987
+    },
+    {
+      "word": "服",
+      "start_time": 7.485083,
+      "end_time": 7.595083,
+      "confidence": 0.6578499
+    },
+    {
+      "word": "务",
+      "start_time": 7.595083,
+      "end_time": 7.625083,
+      "confidence": 0.18749592
+    },
+    {
+      "word": "体",
+      "start_time": 7.625083,
+      "end_time": 7.6850834,
+      "confidence": 0.18079485
+    },
+    {
+      "word": "验。",
+      "start_time": 7.6850834,
+      "end_time": 7.715083,
+      "confidence": 0.2562608
+    }
+  ]
+}

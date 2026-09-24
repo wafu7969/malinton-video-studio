@@ -1,0 +1,263 @@
+{
+  "text": "京东持续投入人工智能、大数据与云计算，以技术创新驱动供应链效率提升，让智能科技融入每一个环节。",
+  "words": [
+    {
+      "word": "京",
+      "start_time": 0.125,
+      "end_time": 0.215,
+      "confidence": 0.4364828
+    },
+    {
+      "word": "东",
+      "start_time": 0.215,
+      "end_time": 0.375,
+      "confidence": 0.69206184
+    },
+    {
+      "word": "持",
+      "start_time": 0.375,
+      "end_time": 0.585,
+      "confidence": 0.8841174
+    },
+    {
+      "word": "续",
+      "start_time": 0.585,
+      "end_time": 0.685,
+      "confidence": 0.82708573
+    },
+    {
+      "word": "投",
+      "start_time": 0.685,
+      "end_time": 0.855,
+      "confidence": 0.96507996
+    },
+    {
+      "word": "入",
+      "start_time": 0.855,
+      "end_time": 0.985,
+      "confidence": 0.9456583
+    },
+    {
+      "word": "人",
+      "start_time": 0.985,
+      "end_time": 1.135,
+      "confidence": 0.9035479
+    },
+    {
+      "word": "工",
+      "start_time": 1.135,
+      "end_time": 1.255,
+      "confidence": 0.7754215
+    },
+    {
+      "word": "智",
+      "start_time": 1.255,
+      "end_time": 1.405,
+      "confidence": 0.70820206
+    },
+    {
+      "word": "能、",
+      "start_time": 1.405,
+      "end_time": 1.655,
+      "confidence": 0.49427217
+    },
+    {
+      "word": "大",
+      "start_time": 1.825,
+      "end_time": 2.005,
+      "confidence": 0.9645539
+    },
+    {
+      "word": "数",
+      "start_time": 2.005,
+      "end_time": 2.165,
+      "confidence": 0.9511592
+    },
+    {
+      "word": "据",
+      "start_time": 2.165,
+      "end_time": 2.455,
+      "confidence": 0.9085691
+    },
+    {
+      "word": "与",
+      "start_time": 2.485,
+      "end_time": 2.515,
+      "confidence": 0.58058697
+    },
+    {
+      "word": "云",
+      "start_time": 2.515,
+      "end_time": 2.615,
+      "confidence": 0.89356077
+    },
+    {
+      "word": "计",
+      "start_time": 2.615,
+      "end_time": 2.765,
+      "confidence": 0.8637544
+    },
+    {
+      "word": "算，",
+      "start_time": 2.765,
+      "end_time": 3.025,
+      "confidence": 0.8870578
+    },
+    {
+      "word": "以",
+      "start_time": 3.4200416,
+      "end_time": 3.5350416,
+      "confidence": 0.87613904
+    },
+    {
+      "word": "技",
+      "start_time": 3.5350416,
+      "end_time": 3.6950417,
+      "confidence": 0.8639271
+    },
+    {
+      "word": "术",
+      "start_time": 3.6950417,
+      "end_time": 3.7850416,
+      "confidence": 0.83379346
+    },
+    {
+      "word": "创",
+      "start_time": 3.7850416,
+      "end_time": 3.9450417,
+      "confidence": 0.94254947
+    },
+    {
+      "word": "新",
+      "start_time": 3.9450417,
+      "end_time": 4.1550417,
+      "confidence": 0.9509519
+    },
+    {
+      "word": "驱",
+      "start_time": 4.1550417,
+      "end_time": 4.3450418,
+      "confidence": 0.8156221
+    },
+    {
+      "word": "动",
+      "start_time": 4.3450418,
+      "end_time": 4.495042,
+      "confidence": 0.8865499
+    },
+    {
+      "word": "供",
+      "start_time": 4.495042,
+      "end_time": 4.7250414,
+      "confidence": 0.94248956
+    },
+    {
+      "word": "应",
+      "start_time": 4.7250414,
+      "end_time": 4.7550416,
+      "confidence": 0.4007516
+    },
+    {
+      "word": "链",
+      "start_time": 4.7550416,
+      "end_time": 4.8650417,
+      "confidence": 0.8136038
+    },
+    {
+      "word": "效",
+      "start_time": 4.8650417,
+      "end_time": 5.0550413,
+      "confidence": 0.93569785
+    },
+    {
+      "word": "率",
+      "start_time": 5.0550413,
+      "end_time": 5.1550417,
+      "confidence": 0.86524075
+    },
+    {
+      "word": "提",
+      "start_time": 5.1550417,
+      "end_time": 5.3050413,
+      "confidence": 0.9231714
+    },
+    {
+      "word": "升，",
+      "start_time": 5.3050413,
+      "end_time": 5.5950413,
+      "confidence": 0.94455326
+    },
+    {
+      "word": "让",
+      "start_time": 5.820083,
+      "end_time": 6.005083,
+      "confidence": 0.9218821
+    },
+    {
+      "word": "智",
+      "start_time": 6.005083,
+      "end_time": 6.165083,
+      "confidence": 0.93458945
+    },
+    {
+      "word": "能",
+      "start_time": 6.165083,
+      "end_time": 6.315083,
+      "confidence": 0.98400253
+    },
+    {
+      "word": "科",
+      "start_time": 6.315083,
+      "end_time": 6.545083,
+      "confidence": 0.89978755
+    },
+    {
+      "word": "技",
+      "start_time": 6.545083,
+      "end_time": 6.6850834,
+      "confidence": 0.90638137
+    },
+    {
+      "word": "融",
+      "start_time": 6.6850834,
+      "end_time": 6.8950834,
+      "confidence": 0.8833501
+    },
+    {
+      "word": "入",
+      "start_time": 6.8950834,
+      "end_time": 6.995083,
+      "confidence": 0.9194679
+    },
+    {
+      "word": "每",
+      "start_time": 6.995083,
+      "end_time": 7.215083,
+      "confidence": 0.9470021
+    },
+    {
+      "word": "一",
+      "start_time": 7.215083,
+      "end_time": 7.295083,
+      "confidence": 0.88600916
+    },
+    {
+      "word": "个",
+      "start_time": 7.295083,
+      "end_time": 7.415083,
+      "confidence": 0.95055515
+    },
+    {
+      "word": "环",
+      "start_time": 7.415083,
+      "end_time": 7.5750833,
+      "confidence": 0.93100303
+    },
+    {
+      "word": "节。",
+      "start_time": 7.5750833,
+      "end_time": 7.635083,
+      "confidence": 0.3646531
+    }
+  ]
+}
