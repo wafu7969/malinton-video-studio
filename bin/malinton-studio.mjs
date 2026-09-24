@@ -45,6 +45,7 @@ function parseArgs(argv) {
     host: 'localhost',
     open: true,
     preview: undefined,
+    remotion: undefined,
   }
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i]
@@ -63,6 +64,9 @@ function parseArgs(argv) {
         break
       case '--preview':
         opts.preview = next()
+        break
+      case '--remotion':
+        opts.remotion = next()
         break
       case '--no-open':
         opts.open = false
@@ -92,6 +96,7 @@ function printHelp() {
                             (e.g. composition/index.html)
     -p, --port <number>     Port to listen on              (default: 3000)
         --host <host>       Host to bind                   (default: localhost)
+        --remotion <file>   Remotion entry file            (e.g. src/index.ts)
         --no-open           Do not open the browser
     -h, --help              Show this message
 
@@ -241,26 +246,168 @@ async function main() {
     process.exit(1)
   }
 
-  if (!opts.preview) {
+  if (!opts.preview && !opts.remotion) {
     process.stderr.write(
-      '\n  ✖ 缺少 --preview 参数\n' +
-        '    请指定合成页面，例如：\n' +
-        '      malinton-studio --preview composition/index.html\n\n',
+      '\n  ✖ 缺少 --preview 或 --remotion 参数\n' +
+        '    请指定合成页面或 Remotion 入口，例如：\n' +
+        '      malinton-studio --preview composition/index.html\n' +
+        '      malinton-studio --remotion src/index.ts\n\n',
     )
     process.exit(1)
   }
 
-  // Normalised to a root-relative path with a leading slash, which is what the
-  // shell hands to the driver as the iframe src.
-  const relativePreview = String(opts.preview).replace(/^[/\\]+/, '')
-  const previewPath = '/' + relativePreview
+  let previewPath
+  let viteServer = null
+  
+  if (opts.remotion) {
+    const remotionEntry = String(opts.remotion).replace(/^[/\\]+/, '')
+    if (!existsSync(resolve(root, remotionEntry))) {
+      process.stderr.write(
+        `\n  ✖ 找不到 Remotion 入口文件: ${remotionEntry}\n` +
+          `    解析为: ${resolve(root, remotionEntry)}\n\n`,
+      )
+      process.exit(1)
+    }
+    
+    let createServer
+    let reactPlugin
+    try {
+      const vite = await import('vite')
+      createServer = vite.createServer
+      const pluginReact = await import('@vitejs/plugin-react')
+      reactPlugin = pluginReact.default
+    } catch (e) {
+      process.stderr.write('\n  ✖ 找不到 vite 或 @vitejs/plugin-react。使用 --remotion 模式需要安装它们。\n\n')
+      process.exit(1)
+    }
+    
+    // Write entry files to a temporary directory in node_modules
+    const { mkdir, writeFile } = await import('node:fs/promises')
+    const tempDir = resolve(root, 'node_modules', '.malinton-studio')
+    if (!existsSync(tempDir)) {
+      await mkdir(tempDir, { recursive: true })
+    }
+    
+    await writeFile(join(tempDir, 'index.html'), `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Preview</title>
+          <script>
+            window.onerror = function(msg, url, line, col, error) {
+              document.body.innerHTML += '<div style="color:red;z-index:9999;position:absolute;top:0">' + msg + '</div>';
+            };
+          </script>
+        </head>
+        <body>
+          <div id="root"></div>
+          <script type="module" src="/node_modules/.malinton-studio/entry.tsx"></script>
+        </body>
+      </html>
+    `)
+    
+    await writeFile(join(tempDir, 'entry.tsx'), `
+      import React from 'react';
+      import { createRoot } from 'react-dom/client';
+      import { Player } from '@remotion/player';
+      import { Internals } from 'remotion';
+      import '../../${remotionEntry.replace(/\\/g, '/')}';
 
-  if (!existsSync(resolve(root, relativePreview))) {
-    process.stderr.write(
-      `\n  ✖ 找不到合成页面: ${relativePreview}\n` +
-        `    解析为: ${resolve(root, relativePreview)}\n\n`,
-    )
-    process.exit(1)
+      const Main = () => {
+        const [comp, setComp] = React.useState(null);
+        const playerRef = React.useRef(null);
+
+        React.useEffect(() => {
+          Internals.waitForRoot((Root) => {
+            const div = document.createElement('div');
+            div.style.display = 'none';
+            document.body.appendChild(div);
+            
+            const root = createRoot(div);
+            const Wrapper = () => (
+              <Internals.CompositionManagerProvider initialCompositions={[]} initialCanvasContent={[]}>
+                <Root />
+              </Internals.CompositionManagerProvider>
+            );
+            root.render(<Wrapper />);
+            
+            setTimeout(() => {
+              let comps = [];
+              if (window.getStaticCompositions) {
+                comps = window.getStaticCompositions();
+              } else if (Internals.compositionsRef.current) {
+                if (typeof Internals.compositionsRef.current.getCompositions === 'function') {
+                  comps = Internals.compositionsRef.current.getCompositions();
+                } else if (Array.isArray(Internals.compositionsRef.current)) {
+                  comps = Internals.compositionsRef.current;
+                }
+              }
+              if (comps && comps.length > 0) {
+                const comp = comps[0];
+                const duration = comp.durationInFrames / comp.fps;
+                const manifest = {
+                  title: comp.id,
+                  meta: { width: comp.width, height: comp.height, frameRate: comp.fps, sourceLabel: 'Remotion Player' },
+                  duration: duration,
+                  scenes: [{ title: comp.id, start: 0, end: duration }],
+                  subtitles: []
+                };
+                if (window.parent && window.parent !== window) {
+                  window.parent.postMessage({ type: 'malinton-studio:manifest', manifest }, '*');
+                  window.parent.postMessage({ type: 'malinton-studio:ready' }, '*');
+                }
+                setComp(() => comp);
+              }
+            }, 100);
+          });
+          
+          const handler = (e) => {
+            if (!e.data || typeof e.data.type !== 'string') return;
+            if (e.data.type === 'malinton-studio:seek' && playerRef.current) {
+              playerRef.current.seekTo(e.data.frame);
+            } else if (e.data.type === 'malinton-studio:play' && playerRef.current) {
+              playerRef.current.play();
+            } else if (e.data.type === 'malinton-studio:pause' && playerRef.current) {
+              playerRef.current.pause();
+            }
+          };
+          window.addEventListener('message', handler);
+          return () => window.removeEventListener('message', handler);
+        }, []);
+
+        if (!comp) return <div>Loading...</div>;
+        return <Player ref={playerRef} component={comp.component} durationInFrames={comp.durationInFrames} fps={comp.fps} compositionWidth={comp.width} compositionHeight={comp.height} style={{width: '100%', height: '100%'}} controls={true} />;
+      };
+      createRoot(document.getElementById('root')).render(<Main />);
+    `)
+    
+    // Create a virtual vite server
+    const vitePort = opts.port + 1
+    viteServer = await createServer({
+      root: root,
+      server: { port: vitePort, strictPort: false },
+      plugins: [reactPlugin()],
+      optimizeDeps: {
+        include: ['react', 'react-dom/client', '@remotion/player', 'remotion']
+      },
+      logLevel: 'warn'
+    })
+    await viteServer.listen()
+    const actualPort = viteServer.config.server.port
+    previewPath = `http://${opts.host}:${actualPort}/node_modules/.malinton-studio/index.html`
+  } else {
+    // Normalised to a root-relative path with a leading slash, which is what the
+    // shell hands to the driver as the iframe src.
+    const relativePreview = String(opts.preview).replace(/^[/\\]+/, '')
+    previewPath = '/' + relativePreview
+
+    if (!existsSync(resolve(root, relativePreview))) {
+      process.stderr.write(
+        `\n  ✖ 找不到合成页面: ${relativePreview}\n` +
+          `    解析为: ${resolve(root, relativePreview)}\n\n`,
+      )
+      process.exit(1)
+    }
   }
 
   const server = createServer(async (req, res) => {
@@ -319,7 +466,7 @@ async function main() {
       '  Malinton Video Studio',
       `  ➜  Local:    ${url}`,
       `  ➜  Root:     ${root}`,
-      `  ➜  Preview:  ${relativePreview}`,
+      `  ➜  Preview:  ${opts.remotion ? '(Remotion) ' + opts.remotion : String(opts.preview).replace(/^[/\\]+/, '')}`,
       '',
     ]
     process.stdout.write(lines.join('\n') + '\n')

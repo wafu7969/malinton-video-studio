@@ -50,6 +50,9 @@
     "open": "^10.1.0"
   },
   "devDependencies": {
+    "@remotion/bundler": "^4.0.527",
+    "@remotion/player": "^4.0.527",
+    "@remotion/renderer": "^4.0.527",
     "@types/node": "^22.10.5",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
