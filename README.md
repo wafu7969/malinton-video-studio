@@ -29,7 +29,16 @@ npm install -D malinton-video-studio
 
 ## 快速开始
 
-### 1. 让合成页面上报时间轴
+如果你正在使用 **Remotion**，只需一条命令即可零配置启动：
+
+```bash
+npx malinton-studio --remotion src/index.ts
+```
+*(CLI 会自动解析组件并建立通信，下方「让合成页面上报时间轴」的繁琐步骤均可跳过！)*
+
+---
+
+### 1. 让合成页面上报时间轴（非 Remotion 项目或需高度自定义）
 
 studio 不读清单文件。**合成页面自己就是唯一数据源** —— 它在启动时把分镜、字幕、时长和音频通过 `postMessage` 报给 studio。
 
@@ -96,8 +105,10 @@ npx malinton-studio --root . --preview composition/index.html
 malinton-studio [root] [options]
 
   -r, --root <dir>       要服务的项目根目录          (默认: 当前目录)
-      --preview <file>   **必填**，合成页面，相对于 root
+      --preview <file>   合成页面，相对于 root
                          （例如 composition/index.html）
+      --remotion <file>  Remotion 动态解析入口，免除编写合成页面的烦恼
+                         （例如 src/index.ts，**--preview 与 --remotion 二选一**）
   -p, --port <number>    监听端口                    (默认: 3000)
       --host <host>      绑定地址                    (默认: localhost)
       --no-open          不自动打开浏览器
@@ -105,6 +116,8 @@ malinton-studio [root] [options]
 ```
 
 `--root` 下的静态资源会被直接服务，所以合成页面可以用相对路径引用音频、图片、脚本。静态文件走 HTTP Range（`206 Partial Content`），`<audio>` / `<video>` 才能正常定位播放。
+
+如果使用 `--remotion` 参数，CLI 会自动为你生成一个虚拟预览页面并代理热更新，**无需任何配置，即插即用**。你只需提供包含 Remotion `registerRoot` 调用的入口文件，它将自动提取 `Composition` 的元数据并对接给 Studio 的时间轴。
 
 ## 作为 React 组件使用
 
