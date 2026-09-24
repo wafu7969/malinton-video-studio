@@ -154,13 +154,39 @@ export function usePlaybackEngine({
    */
   const hasAudio = !!audioSrc
 
+  /**
+   * True while the media element can represent the position we are asking for.
+   *
+   * Audio shorter than the timeline is common — a TTS track that skips a shot,
+   * a clipped file, a placeholder. The element clamps `currentTime` to its own
+   * duration, so trusting it blindly pins the transport at the end of the
+   * audio: the canvas would jump to a late scene while the progress bar stuck
+   * at, say, 00:08. Once we detect that, the wall clock takes over so the rest
+   * of the timeline stays reachable.
+   */
+  const audioUsable = useRef(true)
+
   useEffect(() => {
     const audio = audioRef.current
     if (!hasAudio || !audio) return
-    const onTime = () => setCurrentTime(audio.currentTime)
+    const onTime = () => {
+      // A backwards jump we did not ask for means the element ran out of
+      // media and is reporting its clamped position.
+      if (audioUsable.current && audio.currentTime >= audio.duration - 0.05) {
+        audioUsable.current = false
+      }
+      if (audioUsable.current) setCurrentTime(audio.currentTime)
+    }
     const onEnded = () => {
-      setStatus('ended')
-      setCurrentTime(duration)
+      // Only the end of the whole timeline ends playback. Reaching the end of
+      // a short audio track must not stop the transport.
+      if (duration - audio.currentTime <= 0.25) {
+        setStatus('ended')
+        setCurrentTime(duration)
+      } else {
+        audioUsable.current = false
+        startWallClock(audio.currentTime)
+      }
     }
     audio.addEventListener('timeupdate', onTime)
     audio.addEventListener('ended', onEnded)
@@ -168,7 +194,7 @@ export function usePlaybackEngine({
       audio.removeEventListener('timeupdate', onTime)
       audio.removeEventListener('ended', onEnded)
     }
-  }, [hasAudio, audioSrc, duration])
+  }, [hasAudio, audioSrc, duration, startWallClock])
 
   const seek = useCallback(
     (time: number) => {
@@ -176,6 +202,9 @@ export function usePlaybackEngine({
       setCurrentTime(clamped)
       const audio = audioRef.current
       if (audio && audio.src) {
+        // Re-arm the element whenever we seek somewhere it can actually reach,
+        // so a short track recovers if the user returns to covered ground.
+        if (clamped < audio.duration - 0.05) audioUsable.current = true
         try {
           audio.currentTime = clamped
         } catch {
@@ -191,7 +220,7 @@ export function usePlaybackEngine({
         duration,
       })
     },
-    [duration, frameRate, status, startWallClock, stopWallClock, emit],
+    [duration, frameRate, status, startWallClock, stopWallClock, emit, hasAudio],
   )
 
   const play = useCallback(() => {
@@ -204,6 +233,8 @@ export function usePlaybackEngine({
         /* autoplay policy — the wall clock keeps the UI honest */
       })
     }
+    // Always run the wall clock: it is what carries the transport past the end
+    // of a short audio track, and what covers the silent case entirely.
     startWallClock(from)
     emit('play', {
       time: from,
