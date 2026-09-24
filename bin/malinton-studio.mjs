@@ -331,7 +331,7 @@ async function main() {
             );
             root.render(<Wrapper />);
             
-            setTimeout(() => {
+            const checkComps = () => {
               let comps = [];
               if (window.getStaticCompositions) {
                 comps = window.getStaticCompositions();
@@ -357,8 +357,11 @@ async function main() {
                   window.parent.postMessage({ type: 'malinton-studio:ready' }, '*');
                 }
                 setComp(() => comp);
+              } else {
+                setTimeout(checkComps, 50);
               }
-            }, 100);
+            };
+            checkComps();
           });
           
           const handler = (e) => {
