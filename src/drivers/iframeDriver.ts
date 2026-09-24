@@ -143,6 +143,12 @@ export function createIframeDriver({
         className: 'mvs-stage__frame',
         src,
         title: 'composition preview',
+        /**
+         * Without `autoplay` the composition's own audio is muted by the
+         * browser when it calls `play()` without a user gesture — the page
+         * looks fine and simply never makes a sound.
+         */
+        allow: 'autoplay',
         sandbox:
           sandbox ?? 'allow-scripts allow-same-origin allow-popups allow-forms',
       })

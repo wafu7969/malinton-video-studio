@@ -129,8 +129,46 @@ function safeJoin(root, urlPath) {
   return target
 }
 
-/** Minimal static file handler. Returns true when it wrote a response. */
-async function serveFile(res, filePath) {
+/**
+ * Parse a single-range `Range: bytes=` header against a known size.
+ * Returns null for anything we do not serve as a partial response — a
+ * multi-range request, a malformed one, or a unit we do not speak.
+ */
+function parseRange(header, size) {
+  const match = /^bytes=(\d*)-(\d*)$/.exec(String(header).trim())
+  if (!match) return null
+  const [, rawStart, rawEnd] = match
+  if (rawStart === '' && rawEnd === '') return null
+
+  let start
+  let end
+  if (rawStart === '') {
+    // `bytes=-500` — the last 500 bytes.
+    const suffix = Number(rawEnd)
+    if (!Number.isFinite(suffix) || suffix <= 0) return null
+    start = Math.max(0, size - suffix)
+    end = size - 1
+  } else {
+    start = Number(rawStart)
+    end = rawEnd === '' ? size - 1 : Number(rawEnd)
+    if (!Number.isFinite(start) || !Number.isFinite(end)) return null
+    if (start > end || start >= size) return null
+    end = Math.min(end, size - 1)
+  }
+  return { start, end }
+}
+
+/**
+ * Minimal static file handler. Returns true when it wrote a response.
+ *
+ * Range support is not optional here: `<audio>` / `<video>` only allow
+ * seeking once they know the resource is seekable, and a browser decides that
+ * from whether the server answers a `Range` request with `206` +
+ * `Content-Range`. Answering `200` with the whole file leaves
+ * `audio.seekable` empty, and every `currentTime` assignment is then clamped
+ * back to zero — the audio plays but can never be positioned.
+ */
+async function serveFile(res, filePath, rangeHeader) {
   let stat
   try {
     stat = statSync(filePath)
@@ -138,8 +176,45 @@ async function serveFile(res, filePath) {
     return false
   }
   if (stat.isDirectory()) return false
+
+  const type = MIME[extname(filePath).toLowerCase()] ?? 'application/octet-stream'
+  const size = stat.size
+
+  if (!rangeHeader) {
+    const body = await readFile(filePath)
+    res.writeHead(200, {
+      'Content-Type': type,
+      'Content-Length': size,
+      'Accept-Ranges': 'bytes',
+      'Cache-Control': 'no-store',
+      'Access-Control-Allow-Origin': '*',
+    })
+    res.end(body)
+    return true
+  }
+
+  const range = parseRange(rangeHeader, size)
+  if (!range) {
+    res.writeHead(416, {
+      'Content-Range': `bytes */${size}`,
+      'Accept-Ranges': 'bytes',
+      'Access-Control-Allow-Origin': '*',
+    })
+    res.end()
+    return true
+  }
+
+  const { start, end } = range
   const body = await readFile(filePath)
-  send(res, 200, body, MIME[extname(filePath).toLowerCase()] ?? 'application/octet-stream')
+  res.writeHead(206, {
+    'Content-Type': type,
+    'Content-Length': end - start + 1,
+    'Content-Range': `bytes ${start}-${end}/${size}`,
+    'Accept-Ranges': 'bytes',
+    'Cache-Control': 'no-store',
+    'Access-Control-Allow-Origin': '*',
+  })
+  res.end(body.subarray(start, end + 1))
   return true
 }
 
@@ -190,6 +265,7 @@ async function main() {
 
   const server = createServer(async (req, res) => {
     const url = req.url ?? '/'
+    const range = req.headers.range
 
     try {
       // 1) bootstrap config — tells the shell which composition to load
@@ -206,7 +282,7 @@ async function main() {
       if (url.startsWith('/__studio/asset/')) {
         const rel = url.slice('/__studio/asset/'.length)
         const filePath = safeJoin(DIST, rel)
-        if (filePath && (await serveFile(res, filePath))) return
+        if (filePath && (await serveFile(res, filePath, range))) return
         return send(res, 404, 'asset not found')
       }
 
@@ -218,7 +294,7 @@ async function main() {
 
       // 4) everything else is a project file (composition source, media, ...)
       const target = safeJoin(root, url)
-      if (target && (await serveFile(res, target))) return
+      if (target && (await serveFile(res, target, range))) return
 
       send(res, 404, `not found: ${url}`)
     } catch (error) {

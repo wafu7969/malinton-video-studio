@@ -104,7 +104,7 @@ malinton-studio [root] [options]
   -h, --help             显示帮助
 ```
 
-`--root` 下的静态资源会被直接服务，所以合成页面可以用相对路径引用音频、图片、脚本。
+`--root` 下的静态资源会被直接服务，所以合成页面可以用相对路径引用音频、图片、脚本。静态文件走 HTTP Range（`206 Partial Content`），`<audio>` / `<video>` 才能正常定位播放。
 
 ## 作为 React 组件使用
 
@@ -182,6 +182,8 @@ export default function App() {
 所有时间单位都是**秒**。`resolveManifest()` 会补全默认值、推导 `id` 与序号，并按 `start` 重新排序，所以清单可以写得很随意——只有 `title`、`start`、`text` 这类语义字段是必填的。
 
 **音频与字幕都是可选的。** 不写 `audio` 就只是没有声音，音量控件会置灰；不写 `subtitles` 就只显示分镜列表。
+
+音频路径同样相对于 `--root`。如果用 CLI 启动，内置服务器已经支持 Range 请求，音频可以正常定位。**若你自己起服务器托管 studio，务必让它响应 `Range: bytes=` 并返回 `206`** —— 否则浏览器会认为音频不可寻址（`audio.seekable` 为空），`currentTime` 会被钳回 0，表现为播放器和音频状态永远对不上。
 
 ## 换肤
 
