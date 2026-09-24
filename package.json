@@ -1,6 +1,6 @@
 {
   "name": "malinton-video-studio",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "A lightweight, framework-agnostic video studio for previewing scene-based compositions — storyboard list, subtitle timeline, audio control and live source preview.",
   "keywords": [
     "video",
