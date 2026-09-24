@@ -250,7 +250,6 @@ export function useRemotionDriver({ durationInFrames, fps, width, height }) {
       playerRef.current?.seekTo(frame)
     },
     pause: ({ frame }) => { playerRef.current?.pause(); playerRef.current?.seekTo(frame) },
-    reload: () => playerRef.current?.seekTo(0),
     // 合成里的 <Audio> 归 player 管，音量滑块必须转发过去才有作用
     setVolume: (volume, muted) => {
       wantVolume.current = { volume, muted }
@@ -308,8 +307,6 @@ interface PreviewDriver {
   seek(frame: DriverFrame): void
   play?(frame: DriverFrame): void
   pause?(frame: DriverFrame): void
-  /** 「重新加载源码」按钮。 */
-  reload?(): void
   /**
    * 把播放器的音量与静音状态交给真正发声的那一端。
    *

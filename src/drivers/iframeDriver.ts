@@ -24,14 +24,11 @@ export interface IframeDriverOptions {
   /** Url of the composition page. */
   src: string
   sandbox?: string
-  /** Changing this rebuilds the iframe, used by the "重新加载源码" button. */
-  reloadToken?: number | string
 }
 
 export function createIframeDriver({
   src,
   sandbox,
-  reloadToken,
 }: IframeDriverOptions): PreviewDriver {
   const frameRef = { current: null as HTMLIFrameElement | null }
   let ready = false
@@ -113,7 +110,6 @@ export function createIframeDriver({
 
     render() {
       return createElement('iframe', {
-        key: `${src}#${reloadToken ?? 0}`,
         // Stable identity on purpose. An inline callback would be a new
         // function every render, and React detaches a changed ref by calling
         // it with `null` first — which would clear `ready` mid-session and

@@ -76,15 +76,6 @@ export function ReplayIcon(props: IconProps) {
   )
 }
 
-export function ReloadIcon(props: IconProps) {
-  return (
-    <Base {...props}>
-      <path d="M21 12a9 9 0 1 1-3-6.7" />
-      <polyline points="21 4 21 9 16 9" />
-    </Base>
-  )
-}
-
 export function VolumeIcon(props: IconProps) {
   return (
     <Base {...props}>

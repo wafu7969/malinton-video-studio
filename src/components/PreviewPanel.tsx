@@ -9,7 +9,6 @@ import {
   PauseIcon,
   PlayIcon,
   PrevIcon,
-  ReloadIcon,
   ReplayIcon,
 } from './icons'
 import { Switch } from './Switch'
@@ -19,16 +18,9 @@ export interface PreviewPanelProps {
   engine: PlaybackEngine
   /** Paints the canvas. Rendered inside the stage. */
   driver?: PreviewDriver
-  /** Rebuild the preview source. Owned by the host so it can rebuild a driver. */
-  onReloadSource: () => void
 }
 
-export function PreviewPanel({
-  manifest,
-  engine,
-  driver,
-  onReloadSource,
-}: PreviewPanelProps) {
+export function PreviewPanel({ manifest, engine, driver }: PreviewPanelProps) {
   const { meta } = manifest
   const progress = manifest.duration
     ? (engine.currentTime / manifest.duration) * 100
@@ -148,10 +140,6 @@ export function PreviewPanel({
             <button type="button" className="mvs-btn" onClick={engine.restart}>
               <ReplayIcon />
               重播
-            </button>
-            <button type="button" className="mvs-btn" onClick={onReloadSource}>
-              <ReloadIcon />
-              重新加载源码
             </button>
           </div>
 

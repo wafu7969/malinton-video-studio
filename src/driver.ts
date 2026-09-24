@@ -34,8 +34,6 @@ export interface PreviewDriver {
   play?(frame: DriverFrame): void
   /** Playback paused. */
   pause?(frame: DriverFrame): void
-  /** The host asked for a source reload, e.g. the "重新加载源码" button. */
-  reload?(): void
   /**
    * Apply the transport's volume and mute state to whatever is actually making
    * sound.

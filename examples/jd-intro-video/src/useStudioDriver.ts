@@ -67,10 +67,6 @@ export function useRemotionDriver(): PreviewDriver {
       playerRef.current?.seekTo(frame)
     },
 
-    reload() {
-      playerRef.current?.seekTo(0)
-    },
-
     /**
      * The narration is a `<Audio>` inside the composition, so the studio's own
      * `<audio>` element — and the volume controls wired to it — cannot reach

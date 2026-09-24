@@ -40,9 +40,6 @@ export interface PlaybackEngine {
   setVolume: (v: number) => void
   muted: boolean
   setMuted: (m: boolean) => void
-  /** Bumped whenever the host asks for a source reload. */
-  reloadToken: number
-  reloadSource: () => void
   /** Attach the footer audio element. */
   audioRef: React.MutableRefObject<HTMLAudioElement | null>
   /** The instant currently being displayed, pre-resolved for the driver. */
@@ -72,7 +69,6 @@ export function usePlaybackEngine({
   const [status, setStatus] = useState<PlaybackStatus>('idle')
   const [volume, setVolume] = useState(1)
   const [muted, setMuted] = useState(false)
-  const [reloadToken, setReloadToken] = useState(0)
 
   const audioRef = useRef<HTMLAudioElement | null>(null)
 
@@ -380,11 +376,6 @@ export function usePlaybackEngine({
     startWallClock(0)
   }, [seek, startWallClock])
 
-  const reloadSource = useCallback(() => {
-    driverRef.current?.reload?.()
-    setReloadToken((n) => n + 1)
-  }, [])
-
   /* ------------------------------------------------------------------ */
   /* Side effects                                                        */
   /* ------------------------------------------------------------------ */
@@ -458,8 +449,6 @@ export function usePlaybackEngine({
     setVolume,
     muted,
     setMuted,
-    reloadToken,
-    reloadSource,
     audioRef,
     frame,
   }

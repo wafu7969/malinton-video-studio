@@ -73,10 +73,6 @@ export function useRemotionDriver({
       playerRef.current?.seekTo(frame)
     },
 
-    reload() {
-      playerRef.current?.seekTo(0)
-    },
-
     render() {
       return createElement(Player, {
         ref: playerRef,

@@ -48,8 +48,6 @@ export function Studio({
   className,
   driver: externalDriver,
 }: StudioProps) {
-  const [reloadToken, setReloadToken] = useState(0)
-
   const manifest = useMemo(() => resolveManifest(manifestProp), [manifestProp])
 
   /**
@@ -73,12 +71,11 @@ export function Studio({
     const created = createIframeDriver({
       src: resolveAsset(preview.src),
       sandbox: preview.sandbox,
-      reloadToken,
     })
 
     setDriver(created)
     return () => created.dispose?.()
-  }, [externalDriver, manifest.preview, resolveAsset, reloadToken])
+  }, [externalDriver, manifest.preview, resolveAsset])
 
   const engine = usePlaybackEngine({
     manifest,
@@ -86,11 +83,6 @@ export function Studio({
     autoPlay,
     driver,
   })
-
-  const reloadSource = useCallback(() => {
-    if (externalDriver) externalDriver.reload?.()
-    else setReloadToken((n) => n + 1)
-  }, [externalDriver])
 
   const selectScene = useCallback(
     (index: number) => engine.goToScene(index),
@@ -112,7 +104,6 @@ export function Studio({
           manifest={manifest}
           engine={engine}
           driver={driver}
-          onReloadSource={reloadSource}
         />
         <aside className="mvs-sidebar">
           <SceneList
